@@ -210,6 +210,7 @@ func (engine *Engine) kickBomb(playerID uint16, source Cell, direction Direction
 	bomb := &engine.bombs[index]
 	bomb.Cell = target
 	bomb.FlightUntilMS = saturatingAdd(engine.elapsedMS, NativeBombFlightMS)
+	engine.syncNativeBombLinks()
 	return Event{Kind: EventBombKicked, TimeMS: engine.elapsedMS, PlayerID: playerID, BombID: bomb.ID, FromCell: source, Cell: target}, true
 }
 
@@ -255,6 +256,7 @@ func (engine *Engine) ApplyVerifiedBombMovement(playerID uint16, bombID uint32, 
 	}
 	engine.bombs[index].Cell = target
 	engine.bombs[index].FlightUntilMS = saturatingAdd(engine.elapsedMS, NativeBombFlightMS)
+	engine.syncNativeBombLinks()
 	return Event{Kind: EventBombKicked, TimeMS: engine.elapsedMS, PlayerID: playerID, BombID: bombID, FromCell: source, Cell: target}, nil
 }
 
@@ -316,6 +318,7 @@ func (engine *Engine) relocateMapElement(playerID uint16, source Cell, direction
 		engine.grid.Cells[engine.gridIndex(cell)] = Tile{Kind: CellOpen, FlamePassable: true}
 	}
 	newAnchor := Cell{Row: moved.ElementAnchor.Row + int16(dy), Col: moved.ElementAnchor.Col + int16(dx)}
+	engine.movePendingMapRetirement(moved.ElementAnchor, newAnchor)
 	for index, cell := range footprint {
 		target := Cell{Row: cell.Row + int16(dy), Col: cell.Col + int16(dx)}
 		tile := oldTiles[index]

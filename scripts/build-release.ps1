@@ -142,9 +142,9 @@ $required = @(
 	(Join-Path $workspace 'build-assets\onnxruntime\linux-arm64\libonnxruntime_providers_shared.so'),
 	(Join-Path $workspace 'data\qqt_combine_recipes.json'),
 	(Join-Path $workspace 'data\qqt_forge_rules.json'),
+	(Join-Path $workspace 'data\qqt_competitive_map_rules.json'),
     (Join-Path $workspace 'configs\sso-message-trace-stable.json'),
-    (Join-Path $workspace 'deploy\windows\README.txt'),
-    (Join-Path $workspace 'deploy\windows\RELEASE.md')
+    (Join-Path $workspace 'deploy\windows\README.md'),
 	(Join-Path $workspace 'deploy\windows\start-server-windows.cmd')
 	(Join-Path $workspace 'deploy\linux\start-server-linux-amd64.sh')
 	(Join-Path $workspace 'deploy\linux\start-server-linux-arm64.sh')
@@ -199,6 +199,10 @@ Get-ChildItem -LiteralPath $targetClient -Recurse -Force -File | ForEach-Object 
 $sourcePlaceholder = Join-Path $targetClient 'README.md'
 if (Test-Path -LiteralPath $sourcePlaceholder -PathType Leaf) {
 	Remove-Item -LiteralPath $sourcePlaceholder -Force
+}
+$clientConfigOverrides = Join-Path $workspace 'build-assets\client-config'
+foreach ($configName in @('avatarforge.ini')) {
+    Copy-Item -LiteralPath (Join-Path $clientConfigOverrides $configName) -Destination (Join-Path $targetClient "config\$configName") -Force
 }
 Copy-Item -LiteralPath (Join-Path $workspace 'build-assets\client-no-tp\Client.exe') -Destination (Join-Path $targetClient 'Client.exe') -Force
 Copy-Item -LiteralPath (Join-Path $workspace 'build-assets\client-no-tp\Client.tp-free.json') -Destination (Join-Path $targetClient 'Client.tp-free.json') -Force
@@ -721,7 +725,17 @@ foreach ($architecture in @('amd64', 'arm64')) {
 }
 Copy-Item -LiteralPath (Join-Path $workspace 'data\qqt_combine_recipes.json') -Destination (Join-Path $target 'data\qqt_combine_recipes.json') -Force
 Copy-Item -LiteralPath (Join-Path $workspace 'data\qqt_forge_rules.json') -Destination (Join-Path $target 'data\qqt_forge_rules.json') -Force
-Copy-Item -LiteralPath (Join-Path $workspace 'deploy\windows\README.txt') -Destination (Join-Path $target 'README.txt') -Force
+Copy-Item -LiteralPath (Join-Path $workspace 'data\qqt_competitive_map_rules.json') -Destination (Join-Path $target 'data\qqt_competitive_map_rules.json') -Force
+Copy-Item -LiteralPath (Join-Path $workspace 'deploy\windows\README.md') -Destination (Join-Path $target 'README.md') -Force
+$releaseDocs = Join-Path $target 'docs'
+New-Item -ItemType Directory -Force -Path $releaseDocs | Out-Null
+foreach ($document in @('competitive-map-rules.md', 'avatar-forge-rules.md', 'onnx-network-architecture.md', 'network-deployment.md')) {
+    $documentSource = Join-Path $workspace "docs\public\$document"
+    if (-not (Test-Path -LiteralPath $documentSource -PathType Leaf)) {
+        $documentSource = Join-Path $workspace "docs\$document"
+    }
+    Copy-Item -LiteralPath $documentSource -Destination (Join-Path $releaseDocs $document) -Force
+}
 Copy-Item -LiteralPath (Join-Path $workspace 'deploy\windows\start-server-windows.cmd') -Destination (Join-Path $target 'start-server-windows.cmd') -Force
 Copy-Item -LiteralPath (Join-Path $workspace 'deploy\linux\start-server-linux-amd64.sh') -Destination (Join-Path $target 'start-server-linux-amd64.sh') -Force
 Copy-Item -LiteralPath (Join-Path $workspace 'deploy\linux\start-server-linux-arm64.sh') -Destination (Join-Path $target 'start-server-linux-arm64.sh') -Force
@@ -746,7 +760,7 @@ $writtenManifest = Get-Content -LiteralPath $manifestPath -Raw -Encoding UTF8 | 
 if ($writtenManifest.package_name -ne $packageName -or @($writtenManifest.files).Count -ne $manifestFiles.Count) {
     throw "Release manifest verification failed for package $packageName"
 }
-Copy-Item -LiteralPath (Join-Path $workspace 'deploy\windows\RELEASE.md') -Destination (Join-Path $releaseRoot 'README.md') -Force
+Copy-Item -LiteralPath (Join-Path $workspace 'deploy\windows\README.md') -Destination (Join-Path $releaseRoot 'README.md') -Force
 
 $totalBytes = (Get-ChildItem -LiteralPath $target -Recurse -File | Measure-Object Length -Sum).Sum
 $archivePath = Join-Path $releaseRoot ($packageName + '.zip')

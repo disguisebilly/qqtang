@@ -4,8 +4,8 @@ import "qqtang/internal/protocol/game"
 
 // projectPetForClient joins immutable, species-level innate talents to the
 // learned skill bytes stored for this owned pet. Innate talents come from the
-// original pet-card description/PetCfg mapping and deliberately never cross
-// the persistence boundary.
+// species metadata (original cards or an identified historical restoration)
+// resolved to PetCfg's native IDs. They never cross the persistence boundary.
 func (server *Server) projectPetForClient(pet game.PetInfo) game.PetInfo {
 	innate := server.petInnateSkillsByType[pet.PetTypeID]
 	projected := make([]byte, 0, len(innate)+len(pet.Skills))

@@ -256,6 +256,10 @@ type CompetitiveMap struct {
 	WallItemRules      []CompetitiveWallItemRule
 	WallItemSource     CompetitiveWallItemSource
 	WallItemDonorMapID uint32
+	// TransformationItemsDisabled is an optional local map policy. Its zero
+	// value keeps native/recovered transformations enabled. The original map
+	// table remains intact as evidence; supply generation applies this flag.
+	TransformationItemsDisabled bool
 	// HiddenItemCells, SpawnGroupA and SpawnGroupB are serialized after the
 	// wall-item rules in the native .map file. HiddenItemCells is the exact
 	// primary coordinate list consumed by the client's ItemSeed shuffle;
@@ -299,6 +303,7 @@ const (
 	CompetitiveWallItemsExplicitDonor     CompetitiveWallItemSource = "explicit_donor"
 	CompetitiveWallItemsItemFieldFiltered CompetitiveWallItemSource = "item_field_filtered"
 	CompetitiveWallItemsItemFieldRecovery CompetitiveWallItemSource = "item_field_recovery"
+	CompetitiveWallItemsLocalRuleRecovery CompetitiveWallItemSource = "local_rule_recovery"
 )
 
 type CompetitiveCell struct {
@@ -342,6 +347,12 @@ type Catalog struct {
 }
 
 func LoadCatalog(clientRoot string) (*Catalog, error) {
+	return LoadCatalogWithMapRules(clientRoot, DefaultCompetitiveMapRulesPath(clientRoot))
+}
+
+// LoadCatalogWithMapRules supports deployments with a separate data directory.
+// The ordinary LoadCatalog entry uses the standard release directory layout.
+func LoadCatalogWithMapRules(clientRoot, mapRulesPath string) (*Catalog, error) {
 	if clientRoot == "" {
 		return nil, fmt.Errorf("client root is empty")
 	}
@@ -410,6 +421,9 @@ func LoadCatalog(clientRoot string) (*Catalog, error) {
 		}
 	}
 	catalog.restoreCompetitiveWallItemRules()
+	if err := catalog.loadCompetitiveMapRules(mapRulesPath); err != nil {
+		return nil, err
+	}
 	for _, match := range adventureMapLine.FindAllSubmatch(description, -1) {
 		parsed, parseErr := strconv.ParseUint(string(match[1]), 10, 32)
 		if parseErr != nil {
@@ -673,6 +687,9 @@ func parseCompetitiveCellTable(mapBytes []byte, offset int, width, height uint32
 // capacity is the number of ordinary hidden-item cells. baseCapacity is
 // normally half of that capacity; both limits are enforced independently.
 func (entry CompetitiveMap) RollWallItems(itemSeed uint32, participantCount, capacity, baseCapacity int) []CompetitiveWallItem {
+	if entry.Rule == CompetitiveRuleBox && entry.WallItemSource == CompetitiveWallItemsLocalRuleRecovery {
+		return entry.rollRecoveredBoxWallItems(itemSeed, capacity)
+	}
 	if participantCount < 1 {
 		participantCount = 1
 	}

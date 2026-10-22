@@ -53,53 +53,55 @@ type Server struct {
 	serverLifecycle
 	authenticationState
 
-	gameDataSeq           atomic.Uint32
-	capture               *capture.Writer
-	mapCatalog            *mapdata.Catalog
-	adventureRules        *mapdata.AdventureRules
-	roleRules             *roledata.Rules
-	equipmentCatalog      *equipment.Catalog
-	forgeCatalog          *craftcatalog.Catalog
-	combineCatalog        *craftcatalog.CombineCatalog
-	itemKindsByID         map[uint16]string
-	itemEffectCatalog     *itemeffect.Catalog
-	breakEggCatalog       *functionitem.BreakEggCatalog
-	shopCatalog           *shopcatalog.Catalog
-	playerStore           *persistence.PlayerStore
-	playerService         *application.PlayerService
-	world                 *application.World
-	petCardsByItem        map[uint16]petcatalog.CardLink
-	petCardItemByType     map[uint32]uint16
-	petInnateSkillsByType map[uint32][]byte
-	petSkillBooksByItem   map[uint16]petcatalog.SkillBookLink
-	petSkillItemByID      map[byte]uint16
-	petFoodsByItem        map[uint16]petcatalog.FoodLink
-	petExperienceTable    []uint32
-	logFile               *os.File
-	logWriter             io.Writer
-	logMu                 sync.Mutex
-	applicationMu         sync.Mutex
-	roomActors            roomActorSystem
-	battleMu              sync.RWMutex
-	battles               map[uint32]*match.AdventureBattle
-	competitiveBattles    map[uint32]*match.CompetitiveBattle
-	competitiveAIMu       sync.Mutex
-	competitiveAIPolicy   battleengine.Policy
-	competitiveAICloser   io.Closer
-	competitiveAIRuntime  map[uint32]*liveCompetitiveAIRuntime
-	liveMu                sync.RWMutex
-	liveSessions          map[net.Conn]*connectionSession
-	roomPeerUDPMu         sync.Mutex
-	roomPeerUDPEndpoints  map[roomPeerUDPKey]roomPeerUDPEndpoint
-	roomPeerUDPPresence   map[uint32]roomPeerUDPEndpoint
-	roomPeerRelayStats    map[roomPeerRelayDiagnosticKey]roomPeerRelayDiagnostic
-	virtualRoomPeerSeq    map[uint32]uint32
-	virtualRoomPeerSendMu map[uint32]*sync.Mutex
-	gmHandler             http.Handler
-	gmHTTPServer          *http.Server
-	directoryHallPayload  []byte
-	gameSectionID         uint16
-	sessionPath           string
+	gameDataSeq                 atomic.Uint32
+	capture                     *capture.Writer
+	mapCatalog                  *mapdata.Catalog
+	adventureRules              *mapdata.AdventureRules
+	roleRules                   *roledata.Rules
+	equipmentCatalog            *equipment.Catalog
+	forgeCatalog                *craftcatalog.Catalog
+	competitiveAIBubbleCostumes []uint16
+	combineCatalog              *craftcatalog.CombineCatalog
+	itemKindsByID               map[uint16]string
+	itemEffectCatalog           *itemeffect.Catalog
+	breakEggCatalog             *functionitem.BreakEggCatalog
+	shopCatalog                 *shopcatalog.Catalog
+	playerStore                 *persistence.PlayerStore
+	playerService               *application.PlayerService
+	world                       *application.World
+	petCardsByItem              map[uint16]petcatalog.CardLink
+	petCardItemByType           map[uint32]uint16
+	petInnateSkillsByType       map[uint32][]byte
+	petInnateRulesByType        map[uint32][]itemeffect.Rule
+	petSkillBooksByItem         map[uint16]petcatalog.SkillBookLink
+	petSkillItemByID            map[byte]uint16
+	petFoodsByItem              map[uint16]petcatalog.FoodLink
+	petExperienceTable          []uint32
+	logFile                     *os.File
+	logWriter                   io.Writer
+	logMu                       sync.Mutex
+	applicationMu               sync.Mutex
+	roomActors                  roomActorSystem
+	battleMu                    sync.RWMutex
+	battles                     map[uint32]*match.AdventureBattle
+	competitiveBattles          map[uint32]*match.CompetitiveBattle
+	competitiveAIMu             sync.Mutex
+	competitiveAIPolicy         battleengine.Policy
+	competitiveAICloser         io.Closer
+	competitiveAIRuntime        map[uint32]*liveCompetitiveAIRuntime
+	liveMu                      sync.RWMutex
+	liveSessions                map[net.Conn]*connectionSession
+	roomPeerUDPMu               sync.Mutex
+	roomPeerUDPEndpoints        map[roomPeerUDPKey]roomPeerUDPEndpoint
+	roomPeerUDPPresence         map[uint32]roomPeerUDPEndpoint
+	roomPeerRelayStats          map[roomPeerRelayDiagnosticKey]roomPeerRelayDiagnostic
+	virtualRoomPeerSeq          map[uint32]uint32
+	virtualRoomPeerSendMu       map[uint32]*sync.Mutex
+	gmHandler                   http.Handler
+	gmHTTPServer                *http.Server
+	directoryHallPayload        []byte
+	gameSectionID               uint16
+	sessionPath                 string
 }
 
 type connectionSession struct {
@@ -477,11 +479,13 @@ func New(config Config) (*Server, error) {
 		serverLifecycle:     newServerLifecycle(),
 		authenticationState: newAuthenticationState(),
 		mapCatalog:          catalog, adventureRules: adventureRules, roleRules: roleRules,
-		equipmentCatalog: equipmentCatalog, forgeCatalog: forgeCatalog, combineCatalog: combineCatalog, itemKindsByID: resources.itemKindsByID, itemEffectCatalog: resources.itemEffectCatalog, breakEggCatalog: resources.breakEggCatalog, shopCatalog: shopCatalog, playerStore: playerStore, playerService: playerService,
+		competitiveAIBubbleCostumes: competitiveAIBubbleCostumeIDs(itemEntries),
+		equipmentCatalog:            equipmentCatalog, forgeCatalog: forgeCatalog, combineCatalog: combineCatalog, itemKindsByID: resources.itemKindsByID, itemEffectCatalog: resources.itemEffectCatalog, breakEggCatalog: resources.breakEggCatalog, shopCatalog: shopCatalog, playerStore: playerStore, playerService: playerService,
 		petCardsByItem: resources.petCardsByItem, petSkillBooksByItem: resources.petSkillBooksByItem,
 		petCardItemByType: resources.petCardItemByType, petInnateSkillsByType: resources.petInnateSkillsByType,
-		petSkillItemByID: resources.petSkillItemByID,
-		petFoodsByItem:   resources.petFoodsByItem, petExperienceTable: resources.petExperienceTable,
+		petInnateRulesByType: resources.petInnateRulesByType,
+		petSkillItemByID:     resources.petSkillItemByID,
+		petFoodsByItem:       resources.petFoodsByItem, petExperienceTable: resources.petExperienceTable,
 		battles:               make(map[uint32]*match.AdventureBattle),
 		competitiveBattles:    make(map[uint32]*match.CompetitiveBattle),
 		competitiveAIPolicy:   competitiveAIPolicy,

@@ -92,6 +92,7 @@ func TestHiddenPickupRevealsOnlyWhenWallIsDestroyed(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	events = append(events, finishMapRetirementsForTest(engine)...)
 	if engine.pickups[0].State != PickupAvailable || !hasEvent(events, EventPickupRevealed, 0) {
 		t.Fatalf("destroyed wall did not reveal pickup: pickup=%+v events=%+v", engine.pickups[0], events)
 	}

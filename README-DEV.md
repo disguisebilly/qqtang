@@ -17,6 +17,8 @@ release/QQTang-Local/
 release/QQTang-Local.zip
 ```
 
+常规发行保持这个目录名、ZIP文件名和压缩包顶层目录。模型版本在`configs/models/README.md`及配套元数据中说明，不放入发行文件名。
+
 完整工具链要求见 [CONTRIBUTING.md](CONTRIBUTING.md)。
 
 ## 源码结构
@@ -32,7 +34,20 @@ client/original/    用户自行放置的原始客户端，不进入 Git
 build-assets/       版本化的补全资源与第三方运行时
 ```
 
-开发参考：[架构说明](docs/server-architecture.md)、[协议说明](docs/protocol-overview.md)、[网络部署](docs/network-deployment.md)、[物品 ID](docs/item-id-catalog.md) 和 [AI 模型](configs/models/README.md)。
+开发参考：[架构说明](docs/server-architecture.md)、[协议说明](docs/protocol-overview.md)、[网络部署](docs/network-deployment.md)、[物品 ID](docs/item-id-catalog.md)、[AI 模型](configs/models/README.md)和[ONNX网络架构](docs/onnx-network-architecture.md)。
+
+根目录`README.md`是整体运行与配置说明，`configs/models/README.md`是模型文件、接口和更换说明。发行构建将`deploy/windows/README.md`放到包根目录，并附带README引用的四份使用文档；更新用户说明时保持根目录与该发行源文件一致。
+
+## 可编辑规则与模型
+
+- [地图变身开关](data/qqt_competitive_map_rules.json)：列全地图ID和名称，启动时读取，编辑后重启服务端，不需要构建。语义及示例见[配置说明](docs/competitive-map-rules.md)。
+- [锻造发行默认配置](build-assets/client-config/avatarforge.ini)：构建时覆盖原始客户端旧名单，发布后实际读取`runtime/client-patched/config/avatarforge.ini`。详细规则见[锻造说明](docs/avatar-forge-rules.md)。
+- [水晶规则](data/qqt_forge_rules.json)：独立配置服务端概率和权重。
+- [U2392部署模型](configs/models/README.md)：ONNX与JSON成对更新，采样设置和接口以元数据为准。
+
+`build-assets/client-config`保存发行默认资源，`data`保存服务端运行时规则。修改已发布包里的规则只需重启对应进程，不必重新编译。
+
+单独构建支持AI的服务端时，需要配置C编译器并使用`CGO_ENABLED=1`、`go build -tags onnxruntime ./cmd/qqt-server`。普通`go build`不包含ONNX Runtime后端；完整发布脚本会设置正确标签并附带平台运行库。
 
 ## 开发验证
 

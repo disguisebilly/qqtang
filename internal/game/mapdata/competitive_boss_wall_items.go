@@ -19,6 +19,9 @@ const (
 // item entry point. Callers must not reproduce the base-roll plus accessibility
 // overlay sequence independently.
 func (entry CompetitiveMap) RollFinalCompetitiveBossWallItems(itemSeed uint32, participantCount, capacity, baseCapacity int) []CompetitiveWallItem {
+	if entry.Rule == CompetitiveRuleBox && entry.WallItemSource == CompetitiveWallItemsLocalRuleRecovery {
+		return entry.RollWallItems(itemSeed, participantCount, capacity, baseCapacity)
+	}
 	return EnhanceCompetitiveBossWallItems(
 		entry.RollWallItems(itemSeed, participantCount, capacity, baseCapacity),
 		participantCount,
@@ -30,6 +33,9 @@ func (entry CompetitiveMap) RollFinalCompetitiveBossWallItems(itemSeed uint32, p
 // competitive wall-item entry point shared by live match start, offline
 // training and generated evaluation rounds.
 func (entry CompetitiveMap) RollFinalCompetitiveOrdinaryWallItems(itemSeed uint32, participantCount, capacity, baseCapacity int) []CompetitiveWallItem {
+	if entry.Rule == CompetitiveRuleBox && entry.WallItemSource == CompetitiveWallItemsLocalRuleRecovery {
+		return entry.RollWallItems(itemSeed, participantCount, capacity, baseCapacity)
+	}
 	return EnhanceCompetitiveOrdinaryWallItems(
 		entry.RollWallItems(itemSeed, participantCount, capacity, baseCapacity),
 		entry.WallItemRules,

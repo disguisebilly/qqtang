@@ -128,6 +128,7 @@ func (engine *Engine) dangerTimelineWithAdditionalBomb(
 	if additional != nil {
 		clone.bombs = append(clone.bombs, *additional)
 	}
+	clone.syncNativeBombLinks()
 	deadline := saturatingAdd(engine.elapsedMS, horizonMS)
 	for clone.elapsedMS <= deadline && (len(clone.bombs) != 0 || len(clone.projectiles) != 0) {
 		nextDue := NoDangerImpact
@@ -160,6 +161,7 @@ func (engine *Engine) dangerTimelineWithAdditionalBomb(
 			break
 		}
 		clone.elapsedMS = next
+		clone.expireMapRetirements()
 		clone.expireFlames()
 		clone.resolveActionProjectiles()
 		clone.explodeDueBombs()

@@ -296,7 +296,8 @@ func (engine *Engine) resolveFieldObjectContacts() []Event {
 					if duration := engine.trapDuration(actor); duration != 0 {
 						actor.TrapExpiresAt = saturatingAdd(engine.elapsedMS, duration)
 					}
-					events = append(events, Event{Kind: EventActorTrapped, TimeMS: engine.elapsedMS, PlayerID: object.OwnerID, TargetID: actor.PlayerID, Cell: actor.Position.Cell(), Position: actor.Position})
+					events = append(events, Event{Kind: EventActorTrapped, TimeMS: engine.elapsedMS, PlayerID: object.OwnerID, TargetID: actor.PlayerID, Cell: actor.Position.Cell(), Position: actor.Position,
+						ActionID: object.ActionID, ObjectID: object.ID})
 				}
 				consumed = true
 			case 42:

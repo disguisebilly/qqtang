@@ -30,6 +30,9 @@ type Engine struct {
 	nextProjectileID        uint32
 	outcome                 Outcome
 	nativeContactRequests   map[nativeContactRequestKey]struct{}
+	pendingMapRetirements   map[Cell]pendingMapRetirement
+	nativeBombRegistrations map[uint32]nativeBombRegistration
+	nativeBombLinks         map[uint32][]uint32
 }
 
 type nativeContactRequestKey struct {
@@ -170,6 +173,9 @@ func (engine *Engine) Reset(config Config) error {
 	engine.nextProjectileID = 1
 	engine.outcome = Outcome{}
 	engine.nativeContactRequests = nil
+	engine.pendingMapRetirements = nil
+	engine.nativeBombRegistrations = nil
+	engine.nativeBombLinks = nil
 	return nil
 }
 
@@ -198,6 +204,23 @@ func (engine *Engine) Clone() *Engine {
 	clone.recycledPickupSceneIDs = append([]uint32(nil), engine.recycledPickupSceneIDs...)
 	clone.scheduledPickups = append([]NativeScheduledPickup(nil), engine.scheduledPickups...)
 	clone.projectiles = append([]ActionProjectile(nil), engine.projectiles...)
+	if engine.pendingMapRetirements != nil {
+		clone.pendingMapRetirements = make(map[Cell]pendingMapRetirement, len(engine.pendingMapRetirements))
+		for key, p := range engine.pendingMapRetirements {
+			p.cells = append([]Cell(nil), p.cells...)
+			clone.pendingMapRetirements[key] = p
+		}
+	}
+	if engine.nativeBombRegistrations != nil {
+		clone.nativeBombRegistrations = make(map[uint32]nativeBombRegistration, len(engine.nativeBombRegistrations))
+		clone.nativeBombLinks = make(map[uint32][]uint32, len(engine.nativeBombLinks))
+		for id, b := range engine.nativeBombRegistrations {
+			clone.nativeBombRegistrations[id] = b
+		}
+		for id, links := range engine.nativeBombLinks {
+			clone.nativeBombLinks[id] = append([]uint32(nil), links...)
+		}
+	}
 	if len(engine.nativeContactRequests) != 0 {
 		clone.nativeContactRequests = make(map[nativeContactRequestKey]struct{}, len(engine.nativeContactRequests))
 		for key := range engine.nativeContactRequests {

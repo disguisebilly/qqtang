@@ -54,6 +54,7 @@ func (catalog *Catalog) restoreCompetitiveWallItemRules() {
 	}
 	catalog.restoreCompetitiveItemFieldWallItemRules(mapIDs)
 	catalog.restoreCompetitiveTankWallItemRules()
+	catalog.restoreCompetitiveBoxWallItemRules()
 }
 
 func (catalog *Catalog) restoreCompetitiveItemFieldWallItemRules(mapIDs []uint32) {

@@ -104,6 +104,7 @@ func (engine *Engine) ApplyVerifiedBombPlacementAt(playerID uint16, cell Cell, p
 	}
 	engine.nextBombID++
 	engine.bombs = append(engine.bombs, bomb)
+	engine.syncNativeBombLinks()
 	return Event{Kind: EventBombPlaced, TimeMS: engine.elapsedMS, PlayerID: playerID, BombID: bomb.ID, Cell: cell}, nil
 }
 
@@ -116,6 +117,15 @@ func (engine *Engine) ApplyVerifiedBombPlacementAt(playerID uint16, cell Cell, p
 // later authority-audited reliable 0x0FA5 remains the sole actor-state
 // transition.
 func (engine *Engine) ApplyVerifiedBombExplosion(bombs []VerifiedExplodedBomb, mapHits []VerifiedMapElementHit, destroyedItems []Pickup) ([]Event, error) {
+	if engine == nil {
+		return nil, fmt.Errorf("battle engine is nil")
+	}
+	return engine.ApplyVerifiedBombExplosionAt(engine.elapsedMS, bombs, mapHits, destroyedItems)
+}
+
+// ApplyVerifiedBombExplosionAt preserves the original event clock when a
+// notification arrives between engine frames. Wall retirement is event+500ms.
+func (engine *Engine) ApplyVerifiedBombExplosionAt(sceneMS uint32, bombs []VerifiedExplodedBomb, mapHits []VerifiedMapElementHit, destroyedItems []Pickup) ([]Event, error) {
 	if engine == nil {
 		return nil, fmt.Errorf("battle engine is nil")
 	}
@@ -154,7 +164,9 @@ func (engine *Engine) ApplyVerifiedBombExplosion(bombs []VerifiedExplodedBomb, m
 	}
 
 	events := make([]Event, 0, len(bombs)+len(mapHits))
+	events = append(events, engine.expireMapRetirements()...)
 	explodedIDs := make(map[uint32]struct{}, len(bombs))
+	clearedCells := make(map[Cell]struct{})
 	for _, bomb := range bombs {
 		if bomb.BombID != 0 {
 			explodedIDs[bomb.BombID] = struct{}{}
@@ -166,23 +178,33 @@ func (engine *Engine) ApplyVerifiedBombExplosion(bombs []VerifiedExplodedBomb, m
 			BlastColMin: bomb.BlastColMin, BlastColMax: bomb.BlastColMax,
 		})
 		for col := bomb.BlastColMin; col <= bomb.BlastColMax; col++ {
-			engine.addFlame(Cell{Row: bomb.Cell.Row, Col: col}, bomb.OwnerID)
+			cell := Cell{Row: bomb.Cell.Row, Col: col}
+			clearedCells[cell] = struct{}{}
+			engine.addFlame(cell, bomb.OwnerID)
 		}
 		for row := bomb.BlastRowMin; row <= bomb.BlastRowMax; row++ {
 			if row != bomb.Cell.Row {
-				engine.addFlame(Cell{Row: row, Col: bomb.Cell.Col}, bomb.OwnerID)
+				cell := Cell{Row: row, Col: bomb.Cell.Col}
+				clearedCells[cell] = struct{}{}
+				engine.addFlame(cell, bomb.OwnerID)
 			}
 		}
 	}
-	if len(explodedIDs) != 0 {
-		kept := engine.bombs[:0]
-		for _, bomb := range engine.bombs {
-			if _, exploded := explodedIDs[bomb.ID]; !exploded {
-				kept = append(kept, bomb)
-			}
+	// The native rule-1 FA4 receiver clears every bubble in each reported
+	// blast cell (00606f28 -> 005d3e64), including bubbles omitted from the
+	// explicit chain list. Retire those objects without inventing their own
+	// explosions, extra flame reach or actor hits. The reported cross, rather
+	// than its bounding rectangle or a locally predicted chain, is authoritative.
+	kept := engine.bombs[:0]
+	for _, bomb := range engine.bombs {
+		_, exploded := explodedIDs[bomb.ID]
+		_, cleared := clearedCells[bomb.Cell]
+		if !exploded && !cleared {
+			kept = append(kept, bomb)
 		}
-		engine.bombs = kept
 	}
+	engine.bombs = kept
+	engine.syncNativeBombLinks()
 
 	// FUN_006075d0 destroys every listed map object. Hidden wall contents are
 	// not serialized again in 0x0FA4: every peer already constructed the same
@@ -190,20 +212,15 @@ func (engine *Engine) ApplyVerifiedBombExplosion(bombs []VerifiedExplodedBomb, m
 	// hidden object here keeps the AI mirror on the same information boundary as
 	// the real arbitrator without exposing it one tick early to the policy.
 	for _, hit := range mapHits {
-		event, cells, changed, err := engine.applyVerifiedMapElementHit(hit)
+		event, _, changed, err := engine.applyVerifiedMapElementHitAt(sceneMS, hit)
 		if err != nil {
 			return events, err
 		}
 		if changed {
 			events = append(events, event)
 		}
-		for _, cell := range cells {
-			engine.retireFieldObjectsAtCell(cell)
-			if revealed, ok := engine.revealPickupAt(cell, 0, 0); ok {
-				events = append(events, revealed)
-			}
-		}
 	}
+	events = append(events, engine.expireMapRetirements()...)
 
 	// FUN_00607760 consumes the third 0x0FA4 vector after map destruction. It
 	// finds each already-visible scene object by ItemID/row/column and removes
@@ -241,7 +258,20 @@ func (engine *Engine) ApplyVerifiedPickupDispatch(dispatchTime uint32, dispatche
 			return fmt.Errorf("verified dispatched pickup %d uses unsupported scene ID %d", index, pickup.SceneID)
 		}
 		tile, inside := engine.grid.Cell(pickup.Cell)
-		if !inside || tile.Kind != CellOpen {
+		// FAE's scene timestamp can be a few milliseconds ahead of the
+		// mirror's20ms frame. Accept the authenticated target if its exact
+		// map object has already reached the known native retirement time;
+		// do not advance world time or make the still-flying item pickable.
+		retiredByDispatch := false
+		if inside {
+			key := pickup.Cell
+			if tile.ElementWidth != 0 && tile.ElementHeight != 0 {
+				key = tile.ElementAnchor
+			}
+			pending, found := engine.pendingMapRetirements[key]
+			retiredByDispatch = found && pending.tile.MapElementID == tile.MapElementID && pending.at <= dispatchTime
+		}
+		if !inside || (tile.Kind != CellOpen && !retiredByDispatch) {
 			return fmt.Errorf("verified dispatched pickup %d cell %d,%d is not open", index, pickup.Cell.Row, pickup.Cell.Col)
 		}
 		if _, duplicate := seen[pickup.Cell]; duplicate {
@@ -290,6 +320,10 @@ func (engine *Engine) ApplyVerifiedItemDestruction(destroyed []Pickup) error {
 }
 
 func (engine *Engine) applyVerifiedMapElementHit(hit VerifiedMapElementHit) (Event, []Cell, bool, error) {
+	return engine.applyVerifiedMapElementHitAt(engine.elapsedMS, hit)
+}
+
+func (engine *Engine) applyVerifiedMapElementHitAt(sceneMS uint32, hit VerifiedMapElementHit) (Event, []Cell, bool, error) {
 	tile, _ := engine.grid.Cell(hit.Cell)
 	if tile.Kind == CellOpen && tile.Durability == 0 {
 		return Event{}, nil, false, nil
@@ -316,12 +350,8 @@ func (engine *Engine) applyVerifiedMapElementHit(hit VerifiedMapElementHit) (Eve
 			}
 		}
 	}
-	// FUN_006075d0 is the original 0x0FA4 receiver. It looks up every listed
-	// object by Row/Column and calls its destroy callback immediately; the list
-	// does not describe a merely damaged durable wall.
-	for _, cell := range footprint {
-		index := engine.gridIndex(cell)
-		engine.grid.Cells[index] = Tile{Kind: CellOpen, FlamePassable: true}
-	}
-	return Event{Kind: EventCellDestroyed, TimeMS: engine.elapsedMS, Cell: hit.Cell, ObjectID: hit.MapElementID}, footprint, true, nil
+	// 006075d0 calls 005ef2cf: destruction starts immediately, but the map
+	// object and its movement/flame flags persist for the 500ms state-2 timer.
+	event, started := engine.beginMapRetirement(hit.Cell, footprint, sceneMS, 0, 0)
+	return event, footprint, started, nil
 }

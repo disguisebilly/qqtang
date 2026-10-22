@@ -530,6 +530,7 @@ func (server *Server) prepareCompetitiveRoomMatchStart(session *connectionSessio
 		if projectionErr != nil {
 			return prepared, fmt.Errorf("competitive map %d virtual room projection: %w", selectedMap.ID, projectionErr)
 		}
+		assignCompetitiveAIBubbleCosmetics(roomProjections, server.competitiveAIBubbleCostumes, server.forgeCatalog, gameData.ItemSeed)
 		prepared.competitiveAI, err = newLiveCompetitiveAIRuntime(
 			session.RoomID, selectedMap, gameData, projectedParticipants,
 			roomSnapshot.Properties.UsesFreeRule(), server.competitiveAIPolicy, server.config.CompetitiveAI.TickMS,

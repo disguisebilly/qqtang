@@ -576,8 +576,9 @@ type Bomb struct {
 
 // EffectiveExplodeAtMS returns the earliest engine clock at which the bomb is
 // allowed to explode. A Panda throw preserves the original fuse and changes
-// the registered map cell immediately, but native state 3 suppresses both
-// normal and chain detonation until the 400 ms flight finishes.
+// the registered map cell immediately. Native state 3 suppresses its natural
+// fuse root until flight finishes; an explicit cached-chain batch may still
+// include it (005d4937 expands neighbours without another state-3 check).
 func (bomb Bomb) EffectiveExplodeAtMS() uint32 {
 	if bomb.FlightUntilMS > bomb.ExplodeAtMS {
 		return bomb.FlightUntilMS

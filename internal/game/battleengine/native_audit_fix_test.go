@@ -19,12 +19,13 @@ func TestBlastBatchUsesOldWallAndPreservesItsNewDrop(t *testing.T) {
 			engine.bombs[0], engine.bombs[1] = engine.bombs[1], engine.bombs[0]
 		}
 		engine.explodeDueBombs()
-		if hasFlame(engine.flames, Cell{Row: 3, Col: 2}) || engine.pickups[0].State != PickupAvailable {
+		if hasFlame(engine.flames, Cell{Row: 3, Col: 2}) || engine.pickups[0].State != PickupHidden {
 			t.Fatalf("same batch crossed wall or destroyed new drop: reverse=%t flames=%+v pickups=%+v", reverse, engine.flames, engine.pickups)
 		}
-		// A genuinely later explosion does see the opened wall and old drop.
-		engine.elapsedMS = 200
-		engine.bombs = []Bomb{{ID: 3, OwnerID: 2, Cell: Cell{Row: 0, Col: 2}, Power: 4, ExplodeAtMS: 200}}
+		// Only after the native 500ms retirement does a later explosion see
+		// the opened wall and the newly available drop.
+		finishMapRetirementsForTest(engine)
+		engine.bombs = []Bomb{{ID: 3, OwnerID: 2, Cell: Cell{Row: 0, Col: 2}, Power: 4, ExplodeAtMS: engine.elapsedMS}}
 		engine.explodeDueBombs()
 		if !hasFlame(engine.flames, Cell{Row: 3, Col: 2}) || engine.pickups[0].State != PickupCollected {
 			t.Fatal("later batch did not consume the opened world")

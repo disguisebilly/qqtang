@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"qqtang/internal/game/itemcatalog"
 	"qqtang/internal/game/mapdata"
 	"qqtang/internal/game/match"
 	roomstate "qqtang/internal/game/room"
@@ -144,6 +145,10 @@ func TestCompetitiveAIStandardStartProjectsTheCapacityRoster(t *testing.T) {
 	if err != nil {
 		t.Skipf("verified runtime client is unavailable: %v", err)
 	}
+	entries, err := itemcatalog.Load(filepath.Join("..", "..", "..", "runtime", "client-patched"))
+	if err != nil {
+		t.Fatal(err)
+	}
 	for _, test := range []struct {
 		name        string
 		selection   roomstate.MapSelection
@@ -158,9 +163,10 @@ func TestCompetitiveAIStandardStartProjectsTheCapacityRoster(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			server := &Server{
 				mapCatalog: catalog, logWriter: io.Discard,
-				config:              Config{CompetitiveAI: CompetitiveAIConfig{Enabled: true}},
-				competitiveAIPolicy: &competitiveAIActorPolicyFactoryProbe{},
-				battles:             make(map[uint32]*match.AdventureBattle), competitiveBattles: make(map[uint32]*match.CompetitiveBattle),
+				competitiveAIBubbleCostumes: competitiveAIBubbleCostumeIDs(entries),
+				config:                      Config{CompetitiveAI: CompetitiveAIConfig{Enabled: true}},
+				competitiveAIPolicy:         &competitiveAIActorPolicyFactoryProbe{},
+				battles:                     make(map[uint32]*match.AdventureBattle), competitiveBattles: make(map[uint32]*match.CompetitiveBattle),
 			}
 			profile := game.DefaultPlayerProfile()
 			profile.GameInfo.RoleID = 7
@@ -222,6 +228,12 @@ func TestCompetitiveAIStandardStartProjectsTheCapacityRoster(t *testing.T) {
 				if room.Snapshot().LockedSeats[projection.SeatID-1] {
 					t.Fatalf("AI occupied closed seat %d", projection.SeatID)
 				}
+				if projection.BubbleCosmetic.ItemID == 0 || projection.BubbleCosmetic.ItemRoleID != projection.RoleID {
+					t.Fatalf("match start lost AI bubble equipment: %+v", projection)
+				}
+			}
+			if len(owner.Profile.Inventory) != 1 || owner.Profile.Inventory[0].ItemID != game.CompetitiveAICardItemID {
+				t.Fatal("virtual AI cosmetics changed the human inventory")
 			}
 		})
 	}

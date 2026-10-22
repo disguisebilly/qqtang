@@ -2735,7 +2735,7 @@ func (server *Server) recordCompetitiveAIHumanPackagesOnRoomActor(runtime *liveC
 					destroyedItems = append(destroyedItems, battleengine.Pickup{SceneID: item.ItemID, Cell: battleengine.Cell{Row: int16(item.Row), Col: int16(item.Column)}, State: battleengine.PickupAvailable})
 				}
 				beforeExplosion := runtime.runtime.EngineSnapshot()
-				nativeEvents, acceptErr := runtime.runtime.AcceptNativeBombExplosion(verifiedBombs, mapHits, destroyedItems)
+				nativeEvents, acceptErr := runtime.runtime.AcceptNativeBombExplosionAt(explosion.ClientTime,verifiedBombs, mapHits, destroyedItems)
 				if acceptErr == nil {
 					nativeEvents = append(nativeEvents, runtime.reconcileVirtualExplosionHits(verifiedBombs, explosion.ClientTime)...)
 				}
@@ -2751,11 +2751,7 @@ func (server *Server) recordCompetitiveAIHumanPackagesOnRoomActor(runtime *liveC
 				// normally have authored for itself.
 				runtime.projectEvents(server, beforeExplosion, afterExplosion, nativeEvents)
 				runtime.nativeExplosions[explosionKey] = struct{}{}
-				for _, bomb := range verifiedBombs {
-					if bomb.BombID != 0 {
-						delete(runtime.bombs, bomb.BombID)
-					}
-				}
+				runtime.reconcileNativeBombLedger(afterExplosion)
 				bounds := ""
 				for _, bomb := range verifiedBombs {
 					bounds += fmt.Sprintf("_bomb_%d_owner_%d_cell_%d_%d_rows_%d_%d_cols_%d_%d", bomb.BombID, bomb.OwnerID, bomb.Cell.Row, bomb.Cell.Col, bomb.BlastRowMin, bomb.BlastRowMax, bomb.BlastColMin, bomb.BlastColMax)

@@ -339,7 +339,10 @@ func TestShippedWallItemFloorNeverExceedsNativeHiddenCells(t *testing.T) {
 						baseFloorTotal += floor
 					}
 				}
-				if capacity/2 >= baseFloorTotal && baseFloorTotal != 0 {
+				// Rule8's locally recovered stock uses its declared pickup ranges;
+				// it does not use ordinary three-attribute progression floors.
+				// Its total physical capacity is still checked above.
+				if entry.WallItemSource != CompetitiveWallItemsLocalRuleRecovery && capacity/2 >= baseFloorTotal && baseFloorTotal != 0 {
 					for _, rule := range entry.WallItemRules {
 						if rule.SceneID < 1 || rule.SceneID > 3 || rule.Probability <= 0 || rule.Maximum <= 0 {
 							continue

@@ -492,11 +492,11 @@ func (server *Server) prepareAdventureRoomSettlement(session *connectionSession,
 		return preparedAdventureRoomSettlement{}, fmt.Errorf("adventure room settlement has no player session")
 	}
 	baseAdventurePoints := settlement.AdventurePoints
-	itemIDs, petID, err := server.carriedPetEffectItemIDs(session)
+	itemIDs, petID, petTypeID, err := server.carriedPetEffectItemIDs(session)
 	if err != nil {
 		return preparedAdventureRoomSettlement{}, err
 	}
-	courageEffects := server.applyPetRewardEffects(session, itemIDs, petID, "勇气", settlement.AdventurePoints, 0)
+	courageEffects := server.applyPetRewardEffects(session, itemIDs, petID, petTypeID, "勇气", settlement.AdventurePoints, 0)
 	settlement.AdventurePoints = courageEffects.FinalValue
 	materialBonusItems := 0
 	if len(settlement.CollectedItems) != 0 {
@@ -504,7 +504,7 @@ func (server *Server) prepareAdventureRoomSettlement(session *connectionSession,
 		for itemID, quantity := range settlement.CollectedItems {
 			finalQuantity := quantity
 			if itemID <= math.MaxUint16 && server.itemKindsByID[uint16(itemID)] == "material" {
-				materialEffects := server.applyPetRewardEffects(session, itemIDs, petID, "材料", quantity, itemID)
+				materialEffects := server.applyPetRewardEffects(session, itemIDs, petID, petTypeID, "材料", quantity, itemID)
 				finalQuantity = materialEffects.FinalValue
 				if finalQuantity != quantity {
 					materialBonusItems++
@@ -633,11 +633,11 @@ func (server *Server) commitAdventureSettlement(session *connectionSession, sett
 		return fmt.Errorf("cannot persist adventure settlement without a session UIN")
 	}
 	baseAdventurePoints := settlement.AdventurePoints
-	itemIDs, petID, err := server.carriedPetEffectItemIDs(session)
+	itemIDs, petID, petTypeID, err := server.carriedPetEffectItemIDs(session)
 	if err != nil {
 		return err
 	}
-	courageEffects := server.applyPetRewardEffects(session, itemIDs, petID, "勇气", settlement.AdventurePoints, 0)
+	courageEffects := server.applyPetRewardEffects(session, itemIDs, petID, petTypeID, "勇气", settlement.AdventurePoints, 0)
 	settlement.AdventurePoints = courageEffects.FinalValue
 	materialBonusItems := 0
 	if len(settlement.CollectedItems) != 0 {
@@ -645,7 +645,7 @@ func (server *Server) commitAdventureSettlement(session *connectionSession, sett
 		for itemID, quantity := range settlement.CollectedItems {
 			finalQuantity := quantity
 			if itemID <= math.MaxUint16 && server.itemKindsByID[uint16(itemID)] == "material" {
-				materialEffects := server.applyPetRewardEffects(session, itemIDs, petID, "材料", quantity, itemID)
+				materialEffects := server.applyPetRewardEffects(session, itemIDs, petID, petTypeID, "材料", quantity, itemID)
 				finalQuantity = materialEffects.FinalValue
 				if finalQuantity != quantity {
 					materialBonusItems++

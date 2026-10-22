@@ -819,6 +819,7 @@ func (server *Server) handlePets(writer http.ResponseWriter, request *http.Reque
 	for _, definition := range server.petCatalog.Definitions {
 		view := petCatalogView{
 			PetTypeID: definition.PetTypeID, Name: definition.Name, TypeName: definition.Name,
+			Description:      definition.Description,
 			Level1ResourceID: definition.Level1ResourceID, Level4ResourceID: definition.Level4ResourceID,
 			Level7ResourceID: definition.Level7ResourceID, Assignable: definition.Assignable,
 			ResourceStatus: definition.ResourceStatus, Source: definition.Source,

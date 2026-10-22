@@ -22,30 +22,31 @@ import (
 )
 
 type Config struct {
-	CaptureRoot            string                                   `json:"capture_root"`
-	LogFile                string                                   `json:"log_file"`
-	ClientRoot             string                                   `json:"client_root,omitempty"`
-	DatabasePath           string                                   `json:"database_path,omitempty"`
-	SeedUIN                uint32                                   `json:"seed_uin,omitempty"`
-	InitialAccounts        []InitialAccountConfig                   `json:"initial_accounts,omitempty"`
-	AdventureRulesPath     string                                   `json:"adventure_rules_path,omitempty"`
-	RoleRulesPath          string                                   `json:"role_rules_path,omitempty"`
-	EquipmentSeedsPath     string                                   `json:"equipment_seeds_path,omitempty"`
-	CombineRecipesPath     string                                   `json:"combine_recipes_path,omitempty"`
-	BreakEggRewardsPath    string                                   `json:"break_egg_rewards_path,omitempty"`
-	ForgeRulesPath         string                                   `json:"forge_rules_path,omitempty"`
-	ItemImageAliasesPath   string                                   `json:"item_image_aliases_path,omitempty"`
-	NetworkSettingsPath    string                                   `json:"network_settings_path,omitempty"`
-	GMHTTPAddress          string                                   `json:"gm_http_address,omitempty"`
-	GMAuthPath             string                                   `json:"gm_auth_path,omitempty"`
-	DirectoryHall          *DirectoryHallConfig                     `json:"directory_hall,omitempty"`
-	AdventureRewards       AdventureRewardConfig                    `json:"adventure_rewards,omitempty"`
-	CompetitiveBossRewards map[string][]CompetitiveBossRewardConfig `json:"competitive_boss_rewards,omitempty"`
-	CompetitiveAI          CompetitiveAIConfig                      `json:"competitive_ai,omitempty"`
-	MaxPacketSize          int                                      `json:"max_packet_bytes"`
-	IdleTimeoutMS          int                                      `json:"idle_timeout_ms"`
-	PlayerProfile          *game.PlayerProfile                      `json:"player_profile,omitempty"`
-	Listeners              []ListenerConfig                         `json:"listeners"`
+	CaptureRoot             string                                   `json:"capture_root"`
+	LogFile                 string                                   `json:"log_file"`
+	ClientRoot              string                                   `json:"client_root,omitempty"`
+	DatabasePath            string                                   `json:"database_path,omitempty"`
+	SeedUIN                 uint32                                   `json:"seed_uin,omitempty"`
+	InitialAccounts         []InitialAccountConfig                   `json:"initial_accounts,omitempty"`
+	AdventureRulesPath      string                                   `json:"adventure_rules_path,omitempty"`
+	CompetitiveMapRulesPath string                                   `json:"competitive_map_rules_path,omitempty"`
+	RoleRulesPath           string                                   `json:"role_rules_path,omitempty"`
+	EquipmentSeedsPath      string                                   `json:"equipment_seeds_path,omitempty"`
+	CombineRecipesPath      string                                   `json:"combine_recipes_path,omitempty"`
+	BreakEggRewardsPath     string                                   `json:"break_egg_rewards_path,omitempty"`
+	ForgeRulesPath          string                                   `json:"forge_rules_path,omitempty"`
+	ItemImageAliasesPath    string                                   `json:"item_image_aliases_path,omitempty"`
+	NetworkSettingsPath     string                                   `json:"network_settings_path,omitempty"`
+	GMHTTPAddress           string                                   `json:"gm_http_address,omitempty"`
+	GMAuthPath              string                                   `json:"gm_auth_path,omitempty"`
+	DirectoryHall           *DirectoryHallConfig                     `json:"directory_hall,omitempty"`
+	AdventureRewards        AdventureRewardConfig                    `json:"adventure_rewards,omitempty"`
+	CompetitiveBossRewards  map[string][]CompetitiveBossRewardConfig `json:"competitive_boss_rewards,omitempty"`
+	CompetitiveAI           CompetitiveAIConfig                      `json:"competitive_ai,omitempty"`
+	MaxPacketSize           int                                      `json:"max_packet_bytes"`
+	IdleTimeoutMS           int                                      `json:"idle_timeout_ms"`
+	PlayerProfile           *game.PlayerProfile                      `json:"player_profile,omitempty"`
+	Listeners               []ListenerConfig                         `json:"listeners"`
 
 	NetworkSettings networksetup.Settings `json:"-"`
 	GMCredentials   *gmserver.Credentials `json:"-"`
@@ -300,6 +301,9 @@ func LoadConfig(path string) (Config, error) {
 	}
 	if config.AdventureRulesPath != "" && !filepath.IsAbs(config.AdventureRulesPath) {
 		config.AdventureRulesPath = filepath.Clean(filepath.Join(base, config.AdventureRulesPath))
+	}
+	if config.CompetitiveMapRulesPath != "" && !filepath.IsAbs(config.CompetitiveMapRulesPath) {
+		config.CompetitiveMapRulesPath = filepath.Clean(filepath.Join(base, config.CompetitiveMapRulesPath))
 	}
 	if config.RoleRulesPath != "" && !filepath.IsAbs(config.RoleRulesPath) {
 		config.RoleRulesPath = filepath.Clean(filepath.Join(base, config.RoleRulesPath))

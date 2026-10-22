@@ -211,6 +211,7 @@ movement:
 	engine.releaseFieldObjectPassThrough()
 
 	engine.elapsedMS = saturatingAdd(engine.elapsedMS, engine.rules.TickMS)
+	events = append(events, engine.expireMapRetirements()...)
 	engine.activatePendingPickupDispatches()
 	engine.resolveActionProjectiles()
 	events = append(events, engine.expireMovementStatuses()...)

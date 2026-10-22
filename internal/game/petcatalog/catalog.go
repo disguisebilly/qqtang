@@ -59,6 +59,9 @@ var petCardTypeMappingJSON []byte
 type Definition struct {
 	PetTypeID          uint32   `json:"pet_type_id"`
 	Name               string   `json:"name"`
+	Description        string   `json:"description,omitempty"`
+	InnateSkills       []byte   `json:"innate_skills,omitempty"`
+	TalentSource       string   `json:"talent_source,omitempty"`
 	Level1ResourceID   uint32   `json:"level_1_resource_id"`
 	Level4ResourceID   uint32   `json:"level_4_resource_id"`
 	Level7ResourceID   uint32   `json:"level_7_resource_id"`
@@ -189,6 +192,9 @@ func Load(clientRoot string) (Catalog, error) {
 	}
 	cardLinks, err := loadCardLinks(clientRoot, definitions, skills)
 	if err != nil {
+		return Catalog{}, err
+	}
+	if err := applySpeciesTalents(definitions, cardLinks, skills); err != nil {
 		return Catalog{}, err
 	}
 	skillBooks, foods, err := loadConsumableLinks(clientRoot, skills)

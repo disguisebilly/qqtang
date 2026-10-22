@@ -50,7 +50,7 @@ func TestPetRewardBonusesCoverAuthoritativeCurrencies(t *testing.T) {
 	if percent, chance := server.petRewardBonuses([]uint16{27041, 27071}, "材料"); percent != 2 || chance != 100 {
 		t.Fatalf("material bonuses = %d/%d", percent, chance)
 	}
-	effects := server.applyPetRewardEffects(&connectionSession{UIN: 1, CurrentGameID: 2}, []uint16{27041, 27071}, 3, "材料", 100, 30067)
+	effects := server.applyPetRewardEffects(&connectionSession{UIN: 1, CurrentGameID: 2}, []uint16{27041, 27071}, 3, 0, "材料", 100, 30067)
 	if effects.FinalValue != 204 || !effects.DoubleApplied {
 		t.Fatalf("material reward effects = %+v", effects)
 	}
@@ -83,5 +83,33 @@ func TestCompetitivePetPointsCombineInnateAndLearnedRules(t *testing.T) {
 	percent, chance := server.competitivePetPointBonuses([]uint16{28008, 27021, 27051})
 	if percent != 8 || chance != 3 {
 		t.Fatalf("pet point bonuses = %d%%/%d%%", percent, chance)
+	}
+}
+
+func TestCardlessPetSpeciesTalentsAffectRewardsAndStackWithLearnedSkills(t *testing.T) {
+	entries := []itemcatalog.Entry{{ID: 27021, Kind: "pet-skill-book", Description: "增加所获得的积分3%。"}}
+	server := &Server{itemEffectCatalog: itemeffect.NewCatalog(itemeffect.Discover(entries)),
+		petInnateRulesByType: map[uint32][]itemeffect.Rule{
+			25050: append(itemeffect.NativePetTalentRules("积分之光7%"), itemeffect.NativePetTalentRules("勇气闪耀7%")...),
+			25040: itemeffect.NativePetTalentRules("材料闪耀100%"),
+			25054: itemeffect.NativePetTalentRules("糖币之光14%"),
+			25902: itemeffect.NativePetTalentRules("声望之光7%"),
+		}}
+	if p, c := server.petRewardBonusesForType([]uint16{27021}, 25050, "积分"); p != 10 || c != 0 {
+		t.Fatalf("innate+learned points = %d/%d", p, c)
+	}
+	if p, c := server.petRewardBonusesForType(nil, 25050, "勇气"); p != 0 || c != 7 {
+		t.Fatalf("courage chance = %d/%d", p, c)
+	}
+	effects := server.applyPetRewardEffects(&connectionSession{UIN: 1, CurrentGameID: 2}, nil, 8, 25040, "材料", 3, 30067)
+	if effects.FinalValue != 6 || !effects.DoubleApplied {
+		t.Fatalf("material doubling = %+v", effects)
+	}
+	effects = server.applyPetRewardEffects(&connectionSession{UIN: 1, CurrentGameID: 2}, nil, 9, 25054, "糖币", 100, 0)
+	if effects.FinalValue != 114 {
+		t.Fatalf("money = %+v", effects)
+	}
+	if p, c := server.petRewardBonusesForType(nil, 25902, "声望"); p != 0 || c != 0 {
+		t.Fatalf("unimplemented progression field mutated: %d/%d", p, c)
 	}
 }

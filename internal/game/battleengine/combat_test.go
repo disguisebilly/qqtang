@@ -41,6 +41,7 @@ func TestExplosionStopsAtSolidAndBreakableCellsAndChainsBombs(t *testing.T) {
 	if triggeredBy[1] != 0 || triggeredBy[2] != 1 {
 		t.Fatalf("chain provenance = %v, want root 1 and 2 triggered by 1", triggeredBy)
 	}
+	finishMapRetirementsForTest(engine)
 	if tile, _ := engine.grid.Cell(Cell{Row: 2, Col: 4}); tile.Kind != CellOpen {
 		t.Fatalf("breakable cell survived as %d", tile.Kind)
 	}
@@ -501,6 +502,10 @@ func TestNativeOutcomeAuthorityWaitsForVerifiedExplosionAndReconcilesWorld(t *te
 	if err != nil {
 		t.Fatal(err)
 	}
+	if engine.grid.Cells[1*int(config.Grid.Width)+2].Kind == CellOpen || engine.pickups[0].State != PickupHidden {
+		t.Fatal("native wall/drop opened before state-2 expiry")
+	}
+	events = append(events, finishMapRetirementsForTest(engine)...)
 	if len(engine.bombs) != 0 || engine.grid.Cells[1*int(config.Grid.Width)+2].Kind != CellOpen || engine.pickups[0].State != PickupAvailable {
 		t.Fatalf("verified explosion did not reconcile: bombs=%+v wall=%+v pickup=%+v events=%+v", engine.bombs, engine.grid.Cells[1*int(config.Grid.Width)+2], engine.pickups[0], events)
 	}
@@ -540,6 +545,10 @@ func TestVerifiedExplosionDestroysVisibleItemAndRevealsSeededWallPickup(t *testi
 	if err != nil {
 		t.Fatal(err)
 	}
+	if tile, _ := engine.grid.Cell(wall); tile.Kind == CellOpen {
+		t.Fatal("wall opened before native retirement")
+	}
+	events = append(events, finishMapRetirementsForTest(engine)...)
 	if tile, _ := engine.grid.Cell(wall); tile.Kind != CellOpen {
 		t.Fatalf("native destroyed wall remained %+v", tile)
 	}
@@ -767,6 +776,11 @@ func TestBreakableDurabilityConsumesOneHitAtATime(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	tile, _ = engine.grid.Cell(Cell{Row: 1, Col: 2})
+	if tile.Kind == CellOpen {
+		t.Fatal("damaged wall skipped native destruction interval")
+	}
+	finishMapRetirementsForTest(engine)
 	tile, _ = engine.grid.Cell(Cell{Row: 1, Col: 2})
 	if tile.Kind != CellOpen || tile.Durability != 0 || !hasEvent(events, EventCellDestroyed, 0) {
 		t.Fatalf("second wall hit tile=%+v events=%+v", tile, events)

@@ -117,31 +117,31 @@ func finalizeCompetitivePointEffects(effects competitivePointEffects) competitiv
 func (server *Server) applyCompetitiveSessionRewardEffects(session *connectionSession, result game.GameResultCode, basePoints, baseMoney uint32) (competitivePointEffects, petRewardEffects, error) {
 	effects := server.applyCompetitiveItemPointEffects(session.Profile, session.selectedRoleID(), result, basePoints)
 	moneyEffects := petRewardEffects{BaseValue: baseMoney, FinalValue: baseMoney}
-	itemIDs, petID, err := server.carriedPetEffectItemIDs(session)
+	itemIDs, petID, petTypeID, err := server.carriedPetEffectItemIDs(session)
 	if err != nil {
 		return competitivePointEffects{}, petRewardEffects{}, err
 	}
 	if petID == 0 {
 		return effects, moneyEffects, nil
 	}
-	effects.PetPercent, effects.PetDoubleChance = server.petRewardBonuses(itemIDs, "积分")
+	effects.PetPercent, effects.PetDoubleChance = server.petRewardBonusesForType(itemIDs, petTypeID, "积分")
 	effects.PetDoubleApplied = petRewardChanceRoll(session.CurrentGameID, session.UIN, petID, basePoints, effects.PetDoubleChance, "积分", 0)
-	moneyEffects = server.applyPetRewardEffects(session, itemIDs, petID, "糖币", baseMoney, 0)
+	moneyEffects = server.applyPetRewardEffects(session, itemIDs, petID, petTypeID, "糖币", baseMoney, 0)
 	return finalizeCompetitivePointEffects(effects), moneyEffects, nil
 }
 
-func (server *Server) carriedPetEffectItemIDs(session *connectionSession) ([]uint16, uint32, error) {
+func (server *Server) carriedPetEffectItemIDs(session *connectionSession) ([]uint16, uint32, uint32, error) {
 	if session == nil || session.Profile.GameInfo.PetID == 0 || server.playerStore == nil || server.itemEffectCatalog == nil {
-		return nil, 0, nil
+		return nil, 0, 0, nil
 	}
 	petID := session.Profile.GameInfo.PetID
 	players, err := server.players()
 	if err != nil {
-		return nil, 0, err
+		return nil, 0, 0, err
 	}
 	pets, err := players.ListPets(context.Background(), session.UIN)
 	if err != nil {
-		return nil, 0, err
+		return nil, 0, 0, err
 	}
 	var carried *game.PetInfo
 	for index := range pets {
@@ -151,10 +151,10 @@ func (server *Server) carriedPetEffectItemIDs(session *connectionSession) ([]uin
 		}
 	}
 	if carried == nil {
-		return nil, 0, nil
+		return nil, 0, 0, nil
 	}
 	itemIDs := make([]uint16, 0, 1+len(carried.Skills))
-	if itemID := server.petCardItemByType[carried.PetTypeID]; itemID != 0 {
+	if itemID := server.petCardItemByType[carried.PetTypeID]; itemID != 0 && len(server.petInnateRulesByType[carried.PetTypeID]) == 0 {
 		itemIDs = append(itemIDs, itemID)
 	}
 	for _, skillID := range carried.Skills {
@@ -162,7 +162,7 @@ func (server *Server) carriedPetEffectItemIDs(session *connectionSession) ([]uin
 			itemIDs = append(itemIDs, itemID)
 		}
 	}
-	return itemIDs, carried.PetID, nil
+	return itemIDs, carried.PetID, carried.PetTypeID, nil
 }
 
 func (server *Server) competitivePetPointBonuses(itemIDs []uint16) (percent, doubleChance uint32) {
@@ -194,12 +194,31 @@ func (server *Server) petRewardBonuses(itemIDs []uint16, target string) (percent
 	return percent, doubleChance
 }
 
-func (server *Server) applyPetRewardEffects(session *connectionSession, itemIDs []uint16, petID uint32, target string, base, salt uint32) petRewardEffects {
+func (server *Server) petRewardBonusesForType(itemIDs []uint16, petTypeID uint32, target string) (percent, chance uint32) {
+	percent, chance = server.petRewardBonuses(itemIDs, target)
+	for _, rule := range server.petInnateRulesByType[petTypeID] {
+		if rule.Kind != itemeffect.KindPetTalent || rule.Status != itemeffect.StatusImplemented {
+			continue
+		}
+		switch rule.Target {
+		case target + ":deterministic_percent":
+			percent += uint32(rule.Percent)
+		case target + ":chance_double":
+			chance += uint32(rule.Chance)
+		}
+	}
+	if chance > 100 {
+		chance = 100
+	}
+	return percent, chance
+}
+
+func (server *Server) applyPetRewardEffects(session *connectionSession, itemIDs []uint16, petID, petTypeID uint32, target string, base, salt uint32) petRewardEffects {
 	effects := petRewardEffects{BaseValue: base, FinalValue: base}
 	if base == 0 || petID == 0 {
 		return effects
 	}
-	effects.Percent, effects.DoubleChance = server.petRewardBonuses(itemIDs, target)
+	effects.Percent, effects.DoubleChance = server.petRewardBonusesForType(itemIDs, petTypeID, target)
 	effects.DoubleApplied = petRewardChanceRoll(session.CurrentGameID, session.UIN, petID, base, effects.DoubleChance, target, salt)
 	value := uint64(base) + uint64(base)*uint64(effects.Percent)/100
 	if effects.DoubleApplied {

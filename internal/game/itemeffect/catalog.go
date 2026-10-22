@@ -371,22 +371,9 @@ func discoverRules(entry itemcatalog.Entry) []Rule {
 			Status: StatusNeedsEvidence, Evidence: "installed itemCFG description; idle reward protocol not yet proven",
 		})
 	}
-	for _, match := range petLightPattern.FindAllStringSubmatch(entry.Description, -1) {
-		kind := "deterministic_percent"
-		chance := uint16(0)
-		status := StatusCatalogued
-		if petRewardTargetImplemented(match[1]) {
-			status = StatusImplemented
-		}
-		if match[2] == "闪耀" {
-			kind = "chance_double"
-			chance = parseUint16(match[3])
-		}
-		rules = append(rules, Rule{
-			Kind: KindPetTalent, Trigger: TriggerCompetitiveSettlement, Target: match[1] + ":" + kind,
-			Percent: parseUint16(match[3]), Chance: chance, Status: status,
-			Evidence: "installed pet-card talent description",
-		})
+	for _, rule := range NativePetTalentRules(entry.Description) {
+		rule.Evidence = "installed pet-card talent description"
+		rules = append(rules, rule)
 	}
 	for _, match := range petSkillPercentPattern.FindAllStringSubmatch(entry.Description, -1) {
 		status := StatusCatalogued
@@ -420,6 +407,25 @@ func petRewardTargetImplemented(target string) bool {
 	default:
 		return false
 	}
+}
+
+// NativePetTalentRules resolves the original PetCfg display name independently
+// of an account item. Some valid species have no pet-card ItemID in itemCFG.
+func NativePetTalentRules(name string) []Rule {
+	var rules []Rule
+	for _, match := range petLightPattern.FindAllStringSubmatch(name, -1) {
+		kind, chance, status := "deterministic_percent", uint16(0), StatusCatalogued
+		if petRewardTargetImplemented(match[1]) {
+			status = StatusImplemented
+		}
+		if match[2] == "闪耀" {
+			kind, chance = "chance_double", parseUint16(match[3])
+		}
+		rules = append(rules, Rule{Kind: KindPetTalent, Trigger: TriggerCompetitiveSettlement,
+			Target: match[1] + ":" + kind, Percent: parseUint16(match[3]), Chance: chance,
+			Status: status, Evidence: "native PetCfg SkillName; species-level innate talent"})
+	}
+	return rules
 }
 
 func sourceForEntry(entry itemcatalog.Entry) Source {

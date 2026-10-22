@@ -56,6 +56,7 @@ func (engine *Engine) prospectiveBomb(actorIndex int, requireEmpty bool) (Bomb, 
 func (engine *Engine) commitBomb(bomb Bomb) Event {
 	engine.nextBombID++
 	engine.bombs = append(engine.bombs, bomb)
+	engine.syncNativeBombLinks()
 	return Event{
 		Kind: EventBombPlaced, TimeMS: engine.elapsedMS, PlayerID: bomb.OwnerID,
 		BombID: bomb.ID, Cell: bomb.Cell,
@@ -67,6 +68,7 @@ func (engine *Engine) explodeDueBombs() []Event {
 }
 
 func (engine *Engine) explodeDueBombsMatching(acceptRoot func(Bomb) bool) []Event {
+	engine.syncNativeBombLinks()
 	queue := make([]uint32, 0)
 	var scheduled map[uint32]bool
 	for _, bomb := range engine.bombs {
@@ -81,9 +83,29 @@ func (engine *Engine) explodeDueBombsMatching(acceptRoot func(Bomb) bool) []Even
 	if len(queue) == 0 {
 		return []Event{}
 	}
+	// 005d4937 expands the saved relation before calculating any current
+	// blast bounds. A newly opened route must not invent a new chain edge.
+	for cursor := 0; cursor < len(queue); cursor++ {
+		root := queue[cursor]
+		for _, id := range engine.nativeBombLinks[root] {
+			if scheduled[id] {
+				continue
+			}
+			index := engine.bombIndexByID(id)
+			if index < 0 {
+				continue
+			}
+			scheduled[id] = true
+			queue = append(queue, id)
+			if engine.bombs[index].TriggeredByBombID == 0 {
+				engine.bombs[index].TriggeredByBombID = root
+			}
+		}
+	}
 	exploded := make(map[uint32]bool)
 	events := make([]Event, 0)
 	batch := blastBatch{wallSeen: make(map[Cell]bool), objectSeen: make(map[Cell]bool)}
+	clearedCells := map[Cell]bool{}
 	for len(queue) > 0 {
 		bombID := queue[0]
 		queue = queue[1:]
@@ -116,6 +138,7 @@ func (engine *Engine) explodeDueBombsMatching(acceptRoot func(Bomb) bool) []Even
 			BlastRowMin: rowMin, BlastRowMax: rowMax, BlastColMin: colMin, BlastColMax: colMax,
 		})
 		for _, cell := range blastCells {
+			clearedCells[cell] = true
 			engine.addBombFlame(cell, bomb.OwnerID, bomb.ID)
 		}
 	}
@@ -127,11 +150,12 @@ func (engine *Engine) explodeDueBombsMatching(acceptRoot func(Bomb) bool) []Even
 	}
 	keptBombs := engine.bombs[:0]
 	for _, bomb := range engine.bombs {
-		if !exploded[bomb.ID] {
+		if !exploded[bomb.ID] && !clearedCells[bomb.Cell] {
 			keptBombs = append(keptBombs, bomb)
 		}
 	}
 	engine.bombs = keptBombs
+	engine.syncNativeBombLinks()
 	return events
 }
 
@@ -178,10 +202,7 @@ func (engine *Engine) commitBlastBatch(batch blastBatch) []Event {
 			engine.grid.Cells[index].Durability--
 			events = append(events, Event{Kind: EventCellDamaged, TimeMS: engine.elapsedMS, PlayerID: bomb.OwnerID, BombID: bomb.ID, Cell: cell, ObjectID: tile.MapElementID})
 		} else {
-			engine.grid.Cells[index] = Tile{Kind: CellOpen, FlamePassable: true}
-			events = append(events, Event{Kind: EventCellDestroyed, TimeMS: engine.elapsedMS, PlayerID: bomb.OwnerID, BombID: bomb.ID, Cell: cell, ObjectID: tile.MapElementID,
-				OpenedTraversal: !tile.PlayerPassable(DirectionUp) || !tile.PlayerPassable(DirectionRight) || !tile.PlayerPassable(DirectionDown) || !tile.PlayerPassable(DirectionLeft)})
-			if event, revealed := engine.revealPickupAt(cell, bomb.OwnerID, bomb.ID); revealed {
+			if event, started := engine.beginMapRetirement(cell, []Cell{cell}, engine.elapsedMS, bomb.OwnerID, bomb.ID); started {
 				events = append(events, event)
 			}
 		}
@@ -189,68 +210,25 @@ func (engine *Engine) commitBlastBatch(batch blastBatch) []Event {
 	return events
 }
 
-func (engine *Engine) blastCells(bomb Bomb, scheduled map[uint32]bool, queue *[]uint32, batch *blastBatch) []Cell {
+func (engine *Engine) blastCells(bomb Bomb, _ map[uint32]bool, _ *[]uint32, batch *blastBatch) []Cell {
 	result := []Cell{bomb.Cell}
-	batch.hit(bomb.Cell, bomb, false)
-	directions := [...]Cell{{Row: -1}, {Col: 1}, {Row: 1}, {Col: -1}}
-	for directionIndex, direction := range directions {
-		worldDirection := Direction(directionIndex) + DirectionUp
-		previous, _ := engine.grid.Cell(bomb.Cell)
-		for distance := int16(1); distance <= int16(bomb.Power); distance++ {
-			if !previous.FlamePassableIn(oppositeDirection(worldDirection)) {
-				break
-			}
-			cell := Cell{Row: bomb.Cell.Row + direction.Row*distance, Col: bomb.Cell.Col + direction.Col*distance}
-			tile, ok := engine.grid.Cell(cell)
-			if !ok {
-				break
-			}
+	if tile, inside := engine.grid.Cell(bomb.Cell); inside && tile.Kind == CellOpen && !tile.MapElementOccupied {
+		batch.hit(bomb.Cell, bomb, false)
+	}
+	for _, direction := range []Direction{DirectionUp, DirectionRight, DirectionDown, DirectionLeft} {
+		dx, dy, _ := direction.delta()
+		reach := engine.nativeBlastReach(bomb, direction)
+		for distance := int16(1); distance <= reach; distance++ {
+			cell := Cell{Row: bomb.Cell.Row + int16(dy)*distance, Col: bomb.Cell.Col + int16(dx)*distance}
+			tile, _ := engine.grid.Cell(cell)
+			result = append(result, cell)
 			if tile.Durability > 0 {
 				batch.hit(cell, bomb, true)
-				// Walkable grass may transmit this ray while being destroyed.
-				// Blocking breakable walls retain the native stop-on-hit rule.
-				if !tile.FlamePassableIn(worldDirection) {
-					result = append(result, cell)
-					break
-				}
 			}
-			if !tile.FlamePassableIn(worldDirection) {
-				break
-			}
-			previous = tile
-			result = append(result, cell)
-			batch.hit(cell, bomb, false)
-			otherBomb := false
-			for otherIndex := range engine.bombs {
-				otherBombObject := &engine.bombs[otherIndex]
-				otherID := otherBombObject.ID
-				if otherBombObject.Cell != cell || otherID == bomb.ID {
-					continue
-				}
-				otherBomb = true
-				// Native flame contact reduces the remaining fuse to an immediate
-				// value even during flight, but state 3 still blocks explosion until
-				// landing. Preserve that two-clock behavior instead of exploding a
-				// thrown bomb in mid-air.
-				if otherBombObject.FlightUntilMS > engine.elapsedMS {
-					if otherBombObject.ExplodeAtMS > engine.elapsedMS {
-						otherBombObject.ExplodeAtMS = engine.elapsedMS
-						if otherBombObject.TriggeredByBombID == 0 {
-							otherBombObject.TriggeredByBombID = bomb.ID
-						}
-					}
-					continue
-				}
-				if !scheduled[otherID] {
-					scheduled[otherID] = true
-					if otherBombObject.TriggeredByBombID == 0 {
-						otherBombObject.TriggeredByBombID = bomb.ID
-					}
-					*queue = append(*queue, otherID)
-				}
-			}
-			if otherBomb {
-				break
+			// 005d4937 queues visible item destruction only when both static
+			// map layers are empty. A destroying wall still occupies its layer.
+			if tile.Kind == CellOpen && !tile.MapElementOccupied {
+				batch.hit(cell, bomb, false)
 			}
 		}
 	}

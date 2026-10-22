@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/binary"
 	"io"
+	"os"
 	"path/filepath"
 	"slices"
 	"testing"
@@ -434,6 +435,49 @@ func competitiveTestHiddenCells(count int) []mapdata.CompetitiveCell {
 		cells[index] = mapdata.CompetitiveCell{Row: byte(index / 20), Col: byte(index % 20)}
 	}
 	return cells
+}
+
+func TestBoxGameBeginCarriesRecoveredPickupsUsingNativeSceneIDs(t *testing.T) {
+	root := os.Getenv("QQT_AI_TEST_CLIENT_ROOT")
+	if root == "" {
+		root = filepath.Join("..", "..", "..", "runtime", "client-patched")
+		if _, err := os.Stat(filepath.Join(root, "map", "mapDesc.py")); os.IsNotExist(err) {
+			t.Skip("client resources not installed; set QQT_AI_TEST_CLIENT_ROOT to run this integration check")
+		}
+	}
+	catalog, err := mapdata.LoadCatalog(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	selected, ok := catalog.CompetitiveMap(1402)
+	if !ok {
+		t.Fatal("missing installed box map")
+	}
+	server := &Server{}
+	session := &connectionSession{CurrentGameID: 77, Profile: game.DefaultPlayerProfile()}
+	participants := []match.CompetitiveParticipant{{PlayerID: 1, RoleID: 7, TeamID: 1}, {PlayerID: 2, RoleID: 8, TeamID: 2}}
+	data, err := server.newCompetitiveGameData(session, selected, roomstate.CompetitiveFieldNoItem, 1, participants, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	q, total := map[uint32]int{}, 0
+	for _, item := range data.NewItems {
+		q[item.ItemID] += int(item.Quantity)
+		total += int(item.Quantity)
+	}
+	if q[1] < 10 || q[2] < 10 || q[7] != 4 || q[25] != 2 || q[23] != 2 || q[27] != 4 || q[115] < 1 || total > len(selected.HiddenItemCells) {
+		t.Fatalf("rule8 GAME_BEGIN pool = %+v", data.NewItems)
+	}
+	if q[802] != 0 || q[807] != 0 || q[6] != 0 || len(data.Items) != 0 {
+		t.Fatalf("render resource IDs/ordinary stat overlay leaked into rule8: %+v", data)
+	}
+	// The native rule already grants Action49 twice during player setup. Do
+	// not also give two account/prepared actions in PLAYER_GAME_INFO.NewItems.
+	for _, p := range data.Players {
+		if len(p.NewItems) != 0 {
+			t.Fatal("duplicated native starting bubble stock")
+		}
+	}
 }
 
 func TestFreeCompetitiveRoomStartsUnbalancedTeamsOnSpecialMap(t *testing.T) {

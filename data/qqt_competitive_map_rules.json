@@ -1,0 +1,1635 @@
+{
+  "schema_version": 1,
+  "maps": [
+    {
+      "map_id": 1,
+      "map_name": "水面01",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 2,
+      "map_name": "水面02",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 3,
+      "map_name": "水面03",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 4,
+      "map_name": "水面04",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 5,
+      "map_name": "水面05",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 6,
+      "map_name": "水面06",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 7,
+      "map_name": "水面07",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 8,
+      "map_name": "水面08",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 9,
+      "map_name": "水面09",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 10,
+      "map_name": "水面10",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 11,
+      "map_name": "水面11",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 12,
+      "map_name": "水面12",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 13,
+      "map_name": "水面13",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 14,
+      "map_name": "水面14",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 15,
+      "map_name": "水面15",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 16,
+      "map_name": "水面12(道具场)",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 17,
+      "map_name": "水面17",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 18,
+      "map_name": "水波漩涡",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 19,
+      "map_name": "水之牢",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 20,
+      "map_name": "灵动水面",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 21,
+      "map_name": "热吻",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 22,
+      "map_name": "水上热力",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 23,
+      "map_name": "海洋之声",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 24,
+      "map_name": "水面23",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 25,
+      "map_name": "爱的结晶",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 26,
+      "map_name": "心心相映",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 27,
+      "map_name": "水面奇缘",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 28,
+      "map_name": "海冰之湾",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 101,
+      "map_name": "野外01",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 102,
+      "map_name": "野外02",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 103,
+      "map_name": "野外03",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 104,
+      "map_name": "野外04",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 105,
+      "map_name": "野外05",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 106,
+      "map_name": "野外06",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 107,
+      "map_name": "野外07",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 108,
+      "map_name": "野外08",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 109,
+      "map_name": "野外09",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 110,
+      "map_name": "野外10",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 111,
+      "map_name": "野外11",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 112,
+      "map_name": "猫之森林",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 113,
+      "map_name": "野外传送带",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 114,
+      "map_name": "野外14",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 115,
+      "map_name": "野外15",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 116,
+      "map_name": "野外16",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 117,
+      "map_name": "野外17",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 118,
+      "map_name": "脉动修正版",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 119,
+      "map_name": "传统炸弹人",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 120,
+      "map_name": "QQ森林",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 121,
+      "map_name": "迷宫",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 122,
+      "map_name": "林中小屋",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 123,
+      "map_name": "野外(精典)",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 124,
+      "map_name": "鸟语花香",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 125,
+      "map_name": "野外迷宫",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 126,
+      "map_name": "野外的风车",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 127,
+      "map_name": "年年有鱼",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 128,
+      "map_name": "士兵突击",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 201,
+      "map_name": "中国城01",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 202,
+      "map_name": "中国城02",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 203,
+      "map_name": "中国城03",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 204,
+      "map_name": "中国城04",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 205,
+      "map_name": "中国城05",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 206,
+      "map_name": "中国城06",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 207,
+      "map_name": "中国城07",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 208,
+      "map_name": "中国城08",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 209,
+      "map_name": "中国城09",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 210,
+      "map_name": "中国城10",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 211,
+      "map_name": "景阳岗",
+      "transformation_items_enabled": false
+    },
+    {
+      "map_id": 212,
+      "map_name": "新年瑞兽",
+      "transformation_items_enabled": false
+    },
+    {
+      "map_id": 213,
+      "map_name": "中国城13",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 214,
+      "map_name": "景阳岗",
+      "transformation_items_enabled": false
+    },
+    {
+      "map_id": 215,
+      "map_name": "中国城15",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 216,
+      "map_name": "新年瑞兽(道具场)",
+      "transformation_items_enabled": false
+    },
+    {
+      "map_id": 217,
+      "map_name": "黄金甲外城",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 218,
+      "map_name": "黄金甲内城",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 219,
+      "map_name": "黄金甲外城(道具场)",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 220,
+      "map_name": "黄金甲内城(道具场)",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 221,
+      "map_name": "永恒的见证",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 222,
+      "map_name": "冰心城",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 223,
+      "map_name": "城内大战",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 224,
+      "map_name": "梅花",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 225,
+      "map_name": "双子杀手",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 226,
+      "map_name": "梦之旅",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 227,
+      "map_name": "v段战斗图",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 228,
+      "map_name": "乱战小区",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 229,
+      "map_name": "泾渭分明",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 230,
+      "map_name": "英语中国城",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 231,
+      "map_name": "我们一起走过",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 301,
+      "map_name": "沙漠01",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 302,
+      "map_name": "沙漠02",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 303,
+      "map_name": "沙漠03",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 304,
+      "map_name": "沙漠04",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 305,
+      "map_name": "沙漠05",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 306,
+      "map_name": "沙漠06",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 307,
+      "map_name": "沙漠07",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 308,
+      "map_name": "沙漠08",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 309,
+      "map_name": "沙漠09",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 310,
+      "map_name": "沙漠10",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 311,
+      "map_name": "爱的考验",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 312,
+      "map_name": "牵手季节",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 313,
+      "map_name": "双双对对",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 314,
+      "map_name": "心之懵懂",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 315,
+      "map_name": "爱的考验\\n(无变身)",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 316,
+      "map_name": "沙漠09\\n(无变身)",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 317,
+      "map_name": "沙漠15",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 318,
+      "map_name": "沙漠04(道具场)",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 319,
+      "map_name": "心心相印",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 320,
+      "map_name": "大风车",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 321,
+      "map_name": "方型沙漠",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 322,
+      "map_name": "两情相愿",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 323,
+      "map_name": "沙漠之洲",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 324,
+      "map_name": "QQ堂沙漠之旅",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 325,
+      "map_name": "针锋相对",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 326,
+      "map_name": "双喜临堂",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 327,
+      "map_name": "无限进攻",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 328,
+      "map_name": "沙漠大迷宫",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 329,
+      "map_name": "男左女右",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 401,
+      "map_name": "矿洞01",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 402,
+      "map_name": "矿洞02",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 403,
+      "map_name": "矿洞03",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 404,
+      "map_name": "矿洞04",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 405,
+      "map_name": "矿洞05",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 406,
+      "map_name": "矿洞06",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 407,
+      "map_name": "矿洞07",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 408,
+      "map_name": "矿洞08",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 409,
+      "map_name": "矿洞09",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 410,
+      "map_name": "矿洞10",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 411,
+      "map_name": "矿洞11",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 412,
+      "map_name": "矿洞12",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 413,
+      "map_name": "矿洞13",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 414,
+      "map_name": "矿洞14",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 415,
+      "map_name": "矿洞15",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 416,
+      "map_name": "无聊系列之6矿洞",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 417,
+      "map_name": "勇士之心",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 418,
+      "map_name": "大小不一",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 419,
+      "map_name": "矿洞007",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 420,
+      "map_name": "矿洞20",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 421,
+      "map_name": "惊险矿洞",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 422,
+      "map_name": "极速夺宝(无变身)",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 423,
+      "map_name": "寻宝奇兵",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 424,
+      "map_name": "寻宝系列之08(你发)",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 425,
+      "map_name": "十字架",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 426,
+      "map_name": "只为寻宝",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 501,
+      "map_name": "雪地01",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 502,
+      "map_name": "雪地02",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 503,
+      "map_name": "雪地03",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 504,
+      "map_name": "雪地04",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 505,
+      "map_name": "雪地05",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 506,
+      "map_name": "雪地06",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 507,
+      "map_name": "雪地07",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 508,
+      "map_name": "雪地08",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 509,
+      "map_name": "雪地09",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 510,
+      "map_name": "雪地10",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 511,
+      "map_name": "雪中小屋",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 512,
+      "map_name": "雪地12",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 513,
+      "map_name": "美丽雪花",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 514,
+      "map_name": "冰天雪地",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 515,
+      "map_name": "独守一树",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 516,
+      "map_name": "雪地001",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 517,
+      "map_name": "雪人群",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 518,
+      "map_name": "雪之小区",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 519,
+      "map_name": "雪地08(道具场)",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 520,
+      "map_name": "冰雪世界",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 521,
+      "map_name": "雪地20",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 522,
+      "map_name": "冰雪封情",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 523,
+      "map_name": "冰天雪地",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 524,
+      "map_name": "开心雪花",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 525,
+      "map_name": "水面之QQT",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 701,
+      "map_name": "踢炸弹01",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 702,
+      "map_name": "踢炸弹02",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 703,
+      "map_name": "踢炸弹03",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 704,
+      "map_name": "踢炸弹04",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 801,
+      "map_name": "抢包子01",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 802,
+      "map_name": "抢包子02",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 803,
+      "map_name": "抢包子03",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 804,
+      "map_name": "抢包子04",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 805,
+      "map_name": "抢包子05",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 806,
+      "map_name": "抢包子06",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 807,
+      "map_name": "抢包子07",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 808,
+      "map_name": "抢包子08",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 809,
+      "map_name": "抢包子09",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 810,
+      "map_name": "抢包子10",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 811,
+      "map_name": "抢包子11",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 812,
+      "map_name": "抢包子12",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 813,
+      "map_name": "抢包子13",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 814,
+      "map_name": "抢包子14",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 815,
+      "map_name": "抢包子15",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 816,
+      "map_name": "抢包子16",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 817,
+      "map_name": "抢包子17",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 818,
+      "map_name": "抢包子18",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 819,
+      "map_name": "抢包子19",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 820,
+      "map_name": "抢包子06",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 821,
+      "map_name": "爱心抢包",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 822,
+      "map_name": "最爱疯狂包子PK赛",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 823,
+      "map_name": "抢包子20",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 824,
+      "map_name": "冰之国度VS火之国度",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 825,
+      "map_name": "大家来啊",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 826,
+      "map_name": "抢包子26",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 827,
+      "map_name": "抢包子27",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 828,
+      "map_name": "林包子小铺",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 829,
+      "map_name": "抢包包",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 830,
+      "map_name": "包包生活",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 831,
+      "map_name": "疯狂大抢包",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 901,
+      "map_name": "功夫01",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 902,
+      "map_name": "功夫02",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 903,
+      "map_name": "功夫03",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 904,
+      "map_name": "功夫04",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 905,
+      "map_name": "功夫05",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 906,
+      "map_name": "功夫06",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 907,
+      "map_name": "功夫07",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 908,
+      "map_name": "功夫08",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 909,
+      "map_name": "功夫09",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 910,
+      "map_name": "功夫10",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 911,
+      "map_name": "猪笼寨攻防战",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 912,
+      "map_name": "功夫05(道具场)",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 913,
+      "map_name": "心心相连",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 914,
+      "map_name": "真功夫",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 915,
+      "map_name": "奇幻",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 916,
+      "map_name": "谁主沉浮",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 917,
+      "map_name": "双斧猪笼寨",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 918,
+      "map_name": "中国功夫",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 919,
+      "map_name": "卡 BOSS",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 920,
+      "map_name": "家族训练图",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 921,
+      "map_name": "各家有井",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 922,
+      "map_name": "功夫养猪户",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 923,
+      "map_name": "如来神掌",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1001,
+      "map_name": "比武01",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1002,
+      "map_name": "比武02",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1003,
+      "map_name": "比武03",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1004,
+      "map_name": "比武04",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1005,
+      "map_name": "比武05",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1006,
+      "map_name": "比武06",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1007,
+      "map_name": "比武07",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1008,
+      "map_name": "比武08",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1009,
+      "map_name": "比武09",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1010,
+      "map_name": "比武10",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1011,
+      "map_name": "比武01\\n(无变身)",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1012,
+      "map_name": "比武09\\n(无变身)",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1013,
+      "map_name": "比武11",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1014,
+      "map_name": "比武12",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1015,
+      "map_name": "比武13",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1016,
+      "map_name": "比武14",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1017,
+      "map_name": "比武15",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1018,
+      "map_name": "比武16",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1019,
+      "map_name": "比武17",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1020,
+      "map_name": "比武18",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1021,
+      "map_name": "隧道比武",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1022,
+      "map_name": "太极",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1023,
+      "map_name": "新的开始!新的决斗!",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1024,
+      "map_name": "皇家比武场",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1025,
+      "map_name": "比武23",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1026,
+      "map_name": "武林高手",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1101,
+      "map_name": "夺宝01",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1102,
+      "map_name": "夺宝02",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1103,
+      "map_name": "夺宝03",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1104,
+      "map_name": "夺宝04",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1105,
+      "map_name": "夺宝05",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1106,
+      "map_name": "夺宝06",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1107,
+      "map_name": "夺宝07",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1108,
+      "map_name": "夺宝08",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1109,
+      "map_name": "夺宝09",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1110,
+      "map_name": "夺宝10",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1111,
+      "map_name": "夺宝11",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1112,
+      "map_name": "珍宝岛",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1113,
+      "map_name": "龙窟夺宝",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1114,
+      "map_name": "夺宝05(道具场)",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1115,
+      "map_name": "夺宝15",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1116,
+      "map_name": "夺宝城",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1117,
+      "map_name": "虎口脱险",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1118,
+      "map_name": "龙窟夺宝(新)",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1119,
+      "map_name": "夺宝18",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1120,
+      "map_name": "宝石天下",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1121,
+      "map_name": "夺宝战神",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1122,
+      "map_name": "夺宝王城",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1123,
+      "map_name": "宝石守护像",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1124,
+      "map_name": "瞬杀狂魔",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1125,
+      "map_name": "珍宝岛(新)",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1201,
+      "map_name": "英雄传说01",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1202,
+      "map_name": "英雄传说02",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1203,
+      "map_name": "英雄传说03",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1204,
+      "map_name": "英雄传说04",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1205,
+      "map_name": "英雄传说05",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1206,
+      "map_name": "英雄传说06",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1207,
+      "map_name": "英雄传说07",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1208,
+      "map_name": "英雄传说08",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1209,
+      "map_name": "英雄传说09",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1210,
+      "map_name": "英雄传说10",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1211,
+      "map_name": "英雄传说11",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1212,
+      "map_name": "歧路",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1213,
+      "map_name": "英雄传说14",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1214,
+      "map_name": "爱的呼唤",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1215,
+      "map_name": "心心相印",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1216,
+      "map_name": "英雄巷战",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1217,
+      "map_name": "英雄15",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1218,
+      "map_name": "三角地带",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1301,
+      "map_name": "机器01",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1302,
+      "map_name": "机器02",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1303,
+      "map_name": "机器03",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1304,
+      "map_name": "机器04",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1305,
+      "map_name": "机器05",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1306,
+      "map_name": "机器06",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1307,
+      "map_name": "机器07",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1308,
+      "map_name": "机器08",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1309,
+      "map_name": "机器09",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1310,
+      "map_name": "机器10",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1311,
+      "map_name": "机器11",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1401,
+      "map_name": "箱亲箱爱",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1402,
+      "map_name": "箱路",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1403,
+      "map_name": "游乐场",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1404,
+      "map_name": "占箱为王",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1405,
+      "map_name": "心心箱印",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1406,
+      "map_name": "e箱情愿",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1407,
+      "map_name": "箱棋",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1408,
+      "map_name": "无极",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1409,
+      "map_name": "贪吃蛇",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1701,
+      "map_name": "糖客战01",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1702,
+      "map_name": "糖客战02",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1703,
+      "map_name": "糖客战03",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1704,
+      "map_name": "糖客战04",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1705,
+      "map_name": "糖客战05",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1706,
+      "map_name": "糖客战06",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1707,
+      "map_name": "糖客战07",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 1708,
+      "map_name": "糖客战08",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 4001,
+      "map_name": "比赛01",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 4002,
+      "map_name": "比赛02",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 4003,
+      "map_name": "比赛03",
+      "transformation_items_enabled": true
+    },
+    {
+      "map_id": 4004,
+      "map_name": "比赛04",
+      "transformation_items_enabled": true
+    }
+  ]
+}

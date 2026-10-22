@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "source": "user-supplied-historical-talents-20261023; native-PetCfg-skill-IDs",
+  "reference_url": "https://m.qqan.com/c/27375",
+  "name_alias_note": "Historical names are joined to existing PetCfg species/model order, not new inventory cards. 小蝴蝶的加加/多多百分比按相同奖励语义映射到原生天赋编号。",
+  "pets": [
+    {"pet_type_id":25050,"type_name":"格里芬","reported_name":"格里芬宠","description":"S级宠物，传说中的格里芬，也能驯化成宠物？带上它绝对是人群中最拉风的！具有天赋：积分之光7%，勇气闪耀7%，材料闪耀7%。","talent_names":["积分之光7%","勇气闪耀7%","材料闪耀7%"]},
+    {"pet_type_id":25040,"type_name":"嫦娥玉兔","reported_name":"嫦娥玉兔","description":"S级宠物，嫦娥姐姐和玉兔一同陪伴你。具有天赋：积分闪耀7%，材料闪耀7%，亲密闪耀7%。","talent_names":["积分闪耀7%","材料闪耀7%","亲密闪耀7%"]},
+    {"pet_type_id":25902,"type_name":"树苗","reported_name":"树苗","description":"S级宠物，QQ堂植树造林环保大使。具有天赋：声望之光7%，积分之光7%，勇气之光7%。","talent_names":["声望之光7%","积分之光7%","勇气之光7%"]},
+    {"pet_type_id":25043,"type_name":"白光虎","reported_name":"白光虎","description":"S级宠物，只有集齐所有魔斗士的力量，才能驾驭它的力量！具有天赋：积分之光7%，勇气之光7%，亲密闪耀7%。","talent_names":["积分之光7%","勇气之光7%","亲密闪耀7%"]},
+    {"pet_type_id":25054,"type_name":"肥胖龙","reported_name":"恶魔巨龙","description":"巨龙宠物，只有驯龙高手才有能力饲养。具有天赋：糖币之光14%，积分闪耀7%，材料闪耀7%。","talent_names":["糖币之光14%","积分闪耀7%","材料闪耀7%"]},
+    {"pet_type_id":25045,"type_name":"小蝴蝶","reported_name":"小蝴蝶","description":"挥着花瓣的小蝴蝶，迎来生机勃勃的春天。具有天赋：糖币之光12%，勇气之光6%，亲密闪耀6%。","talent_names":["糖币之光12%","勇气之光6%","亲密闪耀6%"]},
+    {"pet_type_id":25035,"type_name":"囧囧有神","reported_name":"炯炯有神","description":"A级宠物，喜欢搞怪。具有天赋：积分闪耀6%，声望之光6%，亲密闪耀6%。","talent_names":["积分闪耀6%","声望之光6%","亲密闪耀6%"]},
+    {"pet_type_id":25042,"type_name":"雪人","reported_name":"雪人","description":"A级宠物，传递着快乐与祝福。具有天赋：积分闪耀6%，勇气闪耀6%，材料闪耀6%。","talent_names":["积分闪耀6%","勇气闪耀6%","材料闪耀6%"]},
+    {"pet_type_id":25047,"type_name":"肥松鼠","reported_name":"肥松鼠","description":"A级宠物，胖胖的露脐装，两个特色大板牙和毛茸茸的大尾巴，很可爱！具有天赋：糖币之光12%，积分闪耀6%，勇气闪耀6%。","talent_names":["糖币之光12%","积分闪耀6%","勇气闪耀6%"]},
+    {"pet_type_id":25055,"type_name":"新年兔子","reported_name":"新年兔子","description":"A级宠物，兔年的专属大使，它就是活泼可爱的小兔子。具有天赋：声望之光6%，积分闪耀6%，勇气闪耀6%。","talent_names":["声望之光6%","积分闪耀6%","勇气闪耀6%"]},
+    {"pet_type_id":25905,"type_name":"兔子酷比","reported_name":"兔子酷比","description":"A级宠物，今年中秋现身酷比王国，必将成为王国新宠。具有天赋：亲密闪耀6%，声望之光6%，积分之光6%。","talent_names":["亲密闪耀6%","声望之光6%","积分之光6%"]},
+    {"pet_type_id":25049,"type_name":"小萝莉","reported_name":"小萝莉","description":"具有天赋：积分闪耀5%，勇气闪耀5%，材料闪耀5%。","talent_names":["积分闪耀5%","勇气闪耀5%","材料闪耀5%"]},
+    {"pet_type_id":25046,"type_name":"小雪兔","reported_name":"雪兔","description":"B级宠物，白色的雪兔捎来对爱的完美祝福，拥有它的人会获得最真挚的感情。具有天赋：糖币之光10%，积分闪耀5%，勇气闪耀5%。","talent_names":["糖币之光10%","积分闪耀5%","勇气闪耀5%"]},
+    {"pet_type_id":25048,"type_name":"飞骷髅","reported_name":"飞骷髅","description":"B级宠物，看见我眼里闪烁的红光了吗？还不赶紧退散！具有天赋：声望之光5%，积分之光5%，勇气之光5%。","talent_names":["声望之光5%","积分之光5%","勇气之光5%"]},
+    {"pet_type_id":25051,"type_name":"私房猫","reported_name":"甜甜猫","description":"B级宠物，我是一只爱恶作剧的小猫，喜欢牛奶和松饼！具有天赋：糖币之光10%，声望之光5%，积分之光5%。","talent_names":["糖币之光10%","声望之光5%","积分之光5%"]},
+    {"pet_type_id":25052,"type_name":"外星人","reported_name":"外星宝宝","description":"C级宠物，不仅模样长得异常可爱，就连行为都古怪的很呢！具有天赋：积分闪耀5%，勇气闪耀5%。","talent_names":["积分闪耀5%","勇气闪耀5%"]}
+  ]
+}

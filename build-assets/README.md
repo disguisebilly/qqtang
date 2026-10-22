@@ -8,6 +8,7 @@
 
 ```text
 build-assets/
+  client-config/
   client-no-tp/
   resource-cache/
   pytools/
@@ -20,3 +21,5 @@ build-assets/
 原始 QQ堂客户端不属于构建资源，必须由使用者自行放入 `client/original/`。
 
 Python 库的用途、版本和更新方法见 [pytools/README.md](pytools/README.md)。
+
+`client-config/avatarforge.ini`是可锻造名单的发行默认文件。构建脚本在复制原始客户端后应用它，生成`runtime/client-patched/config/avatarforge.ini`。地图变身开关属于服务端运行数据，独立放在[data/qqt_competitive_map_rules.json](../data/qqt_competitive_map_rules.json)，不由客户端资源生成。

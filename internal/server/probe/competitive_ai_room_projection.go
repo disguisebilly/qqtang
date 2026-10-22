@@ -16,12 +16,13 @@ const competitiveAIUINBase uint32 = 1_900_000_000
 // server state. The matching leave notification removes this temporary client
 // object after GAME_OVER.
 type competitiveAIRoomProjection struct {
-	UIN      uint32
-	PlayerID uint16
-	RoleID   byte
-	TeamID   byte
-	SeatID   byte
-	Nickname string
+	UIN            uint32
+	PlayerID       uint16
+	RoleID         byte
+	TeamID         byte
+	SeatID         byte
+	Nickname       string
+	BubbleCosmetic game.ItemInfo
 }
 
 func buildCompetitiveAIRoomProjections(snapshot roomstate.Snapshot, participants []match.CompetitiveParticipant) ([]competitiveAIRoomProjection, error) {
@@ -69,6 +70,9 @@ func (projection competitiveAIRoomProjection) enterNotification(roomID uint16) (
 	profile := game.PlayerProfile{
 		Nickname: projection.Nickname, PlayerID: projection.PlayerID, SectionID: 1,
 		MinimumRoomID: 1, GameInfo: game.GameInfo{RoleID: projection.RoleID, Degree: 1},
+	}
+	if projection.BubbleCosmetic.ItemID != 0 {
+		profile.Inventory = []game.ItemInfo{projection.BubbleCosmetic}
 	}
 	player := game.PlayerInfoInRoomOldFromProfile(projection.UIN, profile, projection.TeamID, projection.SeatID, 0)
 	return game.EnterRoomNotificationOld{Player: player, RoomID: roomID}, nil

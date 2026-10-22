@@ -2,6 +2,7 @@
   "capture_root": "runtime/captures/directory-local-ui",
   "log_file": "runtime/logs/server-local.jsonl",
   "client_root": "../runtime/client-patched",
+  "competitive_map_rules_path": "../data/qqt_competitive_map_rules.json",
   "database_path": "../runtime/data/qqtang.sqlite",
   "seed_uin": 1000001,
   "initial_accounts": [

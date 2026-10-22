@@ -142,38 +142,23 @@ func TestDangerTimelineMovesThrownBombThreatAndWaitsForLanding(t *testing.T) {
 	}
 }
 
-func TestChainContactArmsFlyingBombButWaitsForLanding(t *testing.T) {
+func TestNativeCachedChainCanIncludeAFlyingBomb(t *testing.T) {
 	config := testConfig()
 	config.Grid = testOpenGrid(6, 3)
-	config.Rules.TickMS = 100
 	engine := mustEngine(t, config)
 	engine.elapsedMS = 100
-	engine.bombs = []Bomb{
-		{ID: 1, OwnerID: 1, Cell: Cell{Row: 1, Col: 1}, Power: 3, ExplodeAtMS: 100},
-		{ID: 2, OwnerID: 2, Cell: Cell{Row: 1, Col: 3}, Power: 1, ExplodeAtMS: 900, FlightUntilMS: 400},
-	}
-	engine.nextBombID = 3
-	events, err := engine.Step(nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !hasEvent(events, EventBombExploded, 0) || len(engine.bombs) != 1 || engine.bombs[0].ID != 2 || engine.bombs[0].ExplodeAtMS != 100 {
-		t.Fatalf("flying chain arm at 100 = events=%+v bombs=%+v", events, engine.bombs)
-	}
-	for engine.elapsedMS < 400 {
-		if _, err := engine.Step(nil); err != nil {
-			t.Fatal(err)
+	engine.bombs = []Bomb{{ID: 1, OwnerID: 1, Cell: Cell{1, 1}, Power: 3, ExplodeAtMS: 100}, {ID: 2, OwnerID: 2, Cell: Cell{1, 3}, Power: 1, ExplodeAtMS: 900, FlightUntilMS: 400}}
+	// 005df7d0 gates natural roots, while 005d4937 expands cached neighbours
+	// without another state-3 test. The native receiver also retires the object.
+	events := engine.explodeDueBombs()
+	count := 0
+	for _, event := range events {
+		if event.Kind == EventBombExploded {
+			count++
 		}
 	}
-	if len(engine.bombs) != 1 {
-		t.Fatal("chain-armed bomb exploded before landing")
-	}
-	events, err = engine.Step(nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !hasEvent(events, EventBombExploded, 0) || len(engine.bombs) != 0 {
-		t.Fatalf("chain-armed bomb did not explode on landing: %+v/%+v", events, engine.bombs)
+	if count != 2 || len(engine.bombs) != 0 {
+		t.Fatalf("native chain omitted registered flying neighbour: %+v", events)
 	}
 }
 
@@ -195,8 +180,8 @@ func TestDangerTimelineRebuildsChainAfterBombThrow(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if impact, ok := timeline.ImpactAt(Cell{Row: 1, Col: 4}); !ok || impact != 400 {
-		t.Fatalf("post-throw chain impact = %d/%t, want 400/true", impact, ok)
+	if impact, ok := timeline.ImpactAt(Cell{Row: 1, Col: 4}); !ok || impact != 100 {
+		t.Fatalf("post-throw chain impact = %d/%t, want 100/true", impact, ok)
 	}
 }
 

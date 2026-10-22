@@ -4,6 +4,9 @@
 *.ps1 text eol=crlf
 *.sh text eol=lf
 
+# Preserve the native client's CP936 bytes and CRLF configuration format.
+build-assets/client-config/avatarforge.ini -text whitespace=cr-at-eol,-blank-at-eof
+
 *.bin binary
 *.dll binary
 *.exe binary

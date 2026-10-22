@@ -42,6 +42,7 @@ type serverStaticResources struct {
 	petCardsByItem        map[uint16]petcatalog.CardLink
 	petCardItemByType     map[uint32]uint16
 	petInnateSkillsByType map[uint32][]byte
+	petInnateRulesByType  map[uint32][]itemeffect.Rule
 	petSkillBooksByItem   map[uint16]petcatalog.SkillBookLink
 	petSkillItemByID      map[byte]uint16
 	petFoodsByItem        map[uint16]petcatalog.FoodLink
@@ -164,6 +165,20 @@ func loadServerStaticResources(config Config) (serverStaticResources, error) {
 			resources.petCardItemByType[link.PetTypeID] = itemID
 			resources.petInnateSkillsByType[link.PetTypeID] = append([]byte(nil), link.InnateSkills...)
 		}
+		resources.petInnateRulesByType = make(map[uint32][]itemeffect.Rule)
+		skillNames := make(map[byte]string, len(pets.Skills))
+		for _, skill := range pets.Skills {
+			skillNames[skill.SkillID] = skill.Name
+		}
+		for _, species := range pets.Definitions {
+			if len(species.InnateSkills) == 0 {
+				continue
+			}
+			resources.petInnateSkillsByType[species.PetTypeID] = append([]byte(nil), species.InnateSkills...)
+			for _, id := range species.InnateSkills {
+				resources.petInnateRulesByType[species.PetTypeID] = append(resources.petInnateRulesByType[species.PetTypeID], itemeffect.NativePetTalentRules(skillNames[id])...)
+			}
+		}
 		resources.petSkillItemByID = make(map[byte]uint16, len(resources.petSkillBooksByItem))
 		for itemID, link := range resources.petSkillBooksByItem {
 			if existing, duplicate := resources.petSkillItemByID[link.Skill.SkillID]; duplicate && existing != itemID {
@@ -195,7 +210,11 @@ func loadServerStaticResources(config Config) (serverStaticResources, error) {
 	}
 	if responseFamilyEnabled(config, func(response ResponseConfig) bool { return response.gameBeginEnabled() }) {
 		var err error
-		resources.mapCatalog, err = mapdata.LoadCatalog(config.ClientRoot)
+		if config.CompetitiveMapRulesPath != "" {
+			resources.mapCatalog, err = mapdata.LoadCatalogWithMapRules(config.ClientRoot, config.CompetitiveMapRulesPath)
+		} else {
+			resources.mapCatalog, err = mapdata.LoadCatalog(config.ClientRoot)
+		}
 		if err != nil {
 			return resources, fmt.Errorf("load adventure map catalog: %w", err)
 		}

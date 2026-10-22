@@ -261,12 +261,19 @@ func (runtime *Runtime) AcceptNativeBombExplosion(bombs []VerifiedExplodedBomb, 
 	if runtime == nil || runtime.engine == nil {
 		return nil, fmt.Errorf("battle runtime is nil")
 	}
+	return runtime.AcceptNativeBombExplosionAt(runtime.engine.elapsedMS, bombs, mapHits, destroyedItems)
+}
+
+func (runtime *Runtime) AcceptNativeBombExplosionAt(sceneMS uint32, bombs []VerifiedExplodedBomb, mapHits []VerifiedMapElementHit, destroyedItems []Pickup) ([]Event, error) {
+	if runtime == nil || runtime.engine == nil {
+		return nil, fmt.Errorf("battle runtime is nil")
+	}
 	for _, bomb := range bombs {
 		if runtime.engine.actorIndex(bomb.OwnerID) < 0 {
 			return nil, fmt.Errorf("battle runtime explosion owner %d is not a participant", bomb.OwnerID)
 		}
 	}
-	return runtime.engine.ApplyVerifiedBombExplosion(bombs, mapHits, destroyedItems)
+	return runtime.engine.ApplyVerifiedBombExplosionAt(sceneMS, bombs, mapHits, destroyedItems)
 }
 
 // AcceptNativePickupDispatch mirrors the complete target vector authored by

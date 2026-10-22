@@ -34,6 +34,10 @@ func TestWalkableGrassBurnsAndClearsPlacementWhileFlameContinues(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	if got, _ := engine.grid.Cell(cell); !got.MapElementOccupied {
+		t.Fatal("grass skipped its 500ms retirement")
+	}
+	finishMapRetirementsForTest(engine)
 	if got, _ := engine.grid.Cell(cell); got.MapElementOccupied || got.Durability != 0 || got.Kind != CellOpen {
 		t.Fatalf("grass survived: %+v", got)
 	}
