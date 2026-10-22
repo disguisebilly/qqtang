@@ -403,6 +403,9 @@ type logEvent struct {
 }
 
 func New(config Config) (*Server, error) {
+	if err := config.CompetitiveAI.validateBubbleCostumeStyleLists(); err != nil {
+		return nil, err
+	}
 	var (
 		competitiveAIPolicy       battleengine.Policy
 		competitiveAICloser       io.Closer
@@ -452,6 +455,10 @@ func New(config Config) (*Server, error) {
 	combineCatalog := resources.combineCatalog
 	shopCatalog := resources.shopCatalog
 	itemEntries := resources.itemEntries
+	bubbleCostumes, err := resolveCompetitiveAIBubbleCostumes(itemEntries, config.CompetitiveAI.BubbleCostumeItemIDs)
+	if err != nil {
+		return nil, err
+	}
 	directoryHallPayload := resources.directoryHallPayload
 	gameSectionID := resources.gameSectionID
 	playerRuntime, err := loadServerPlayerRuntime(config, resources)
@@ -479,7 +486,7 @@ func New(config Config) (*Server, error) {
 		serverLifecycle:     newServerLifecycle(),
 		authenticationState: newAuthenticationState(),
 		mapCatalog:          catalog, adventureRules: adventureRules, roleRules: roleRules,
-		competitiveAIBubbleCostumes: competitiveAIBubbleCostumeIDs(itemEntries),
+		competitiveAIBubbleCostumes: bubbleCostumes,
 		equipmentCatalog:            equipmentCatalog, forgeCatalog: forgeCatalog, combineCatalog: combineCatalog, itemKindsByID: resources.itemKindsByID, itemEffectCatalog: resources.itemEffectCatalog, breakEggCatalog: resources.breakEggCatalog, shopCatalog: shopCatalog, playerStore: playerStore, playerService: playerService,
 		petCardsByItem: resources.petCardsByItem, petSkillBooksByItem: resources.petSkillBooksByItem,
 		petCardItemByType: resources.petCardItemByType, petInnateSkillsByType: resources.petInnateSkillsByType,

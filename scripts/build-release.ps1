@@ -729,7 +729,7 @@ Copy-Item -LiteralPath (Join-Path $workspace 'data\qqt_competitive_map_rules.jso
 Copy-Item -LiteralPath (Join-Path $workspace 'deploy\windows\README.md') -Destination (Join-Path $target 'README.md') -Force
 $releaseDocs = Join-Path $target 'docs'
 New-Item -ItemType Directory -Force -Path $releaseDocs | Out-Null
-foreach ($document in @('competitive-map-rules.md', 'avatar-forge-rules.md', 'onnx-network-architecture.md', 'network-deployment.md')) {
+foreach ($document in @('competitive-map-rules.md', 'avatar-forge-rules.md', 'ai-bubble-costumes.md', 'onnx-network-architecture.md', 'network-deployment.md')) {
     $documentSource = Join-Path $workspace "docs\public\$document"
     if (-not (Test-Path -LiteralPath $documentSource -PathType Leaf)) {
         $documentSource = Join-Path $workspace "docs\$document"

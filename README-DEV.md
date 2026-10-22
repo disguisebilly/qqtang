@@ -36,7 +36,7 @@ build-assets/       版本化的补全资源与第三方运行时
 
 开发参考：[架构说明](docs/server-architecture.md)、[协议说明](docs/protocol-overview.md)、[网络部署](docs/network-deployment.md)、[物品 ID](docs/item-id-catalog.md)、[AI 模型](configs/models/README.md)和[ONNX网络架构](docs/onnx-network-architecture.md)。
 
-根目录`README.md`是整体运行与配置说明，`configs/models/README.md`是模型文件、接口和更换说明。发行构建将`deploy/windows/README.md`放到包根目录，并附带README引用的四份使用文档；更新用户说明时保持根目录与该发行源文件一致。
+根目录`README.md`是整体运行与配置说明，`configs/models/README.md`是模型文件、接口和更换说明。发行构建将`deploy/windows/README.md`放到包根目录，并附带README引用的使用文档；更新用户说明时保持根目录与该发行源文件一致。
 
 ## 可编辑规则与模型
 

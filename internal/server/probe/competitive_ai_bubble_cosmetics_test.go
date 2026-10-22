@@ -27,6 +27,46 @@ func bubbleCosmeticRoster() []competitiveAIRoomProjection {
 
 var testBubbleCostumeIDs = []uint16{119, 153, 154, 244, 256, 257, 414, 1005}
 
+var testBubbleDefaultStyle = CompetitiveAIConfig{
+	BubbleCostumeColorIDs:     []uint16{1, 2, 3, 4, 5},
+	BubbleCostumeEffectLevels: []uint16{1, 2, 3, 4, 5},
+}
+
+func TestCompetitiveAIBubbleCostumeAllowlistAndEmptyDisable(t *testing.T) {
+	entries := []itemcatalog.Entry{
+		{ID: 119, RegistryCategory: "bomb"}, {ID: 256, RegistryCategory: "bomb"},
+		{ID: 99, RegistryCategory: "cap"},
+	}
+	for _, test := range []struct {
+		name      string
+		allowed   []uint16
+		want      []uint16
+		wantError bool
+	}{
+		{"omitted disables", nil, []uint16{}, false},
+		{"empty disables", []uint16{}, []uint16{}, false},
+		{"zero mixes plain bubble", []uint16{119, 0}, []uint16{0, 119}, false},
+		{"restricted", []uint16{256}, []uint16{256}, false},
+		{"non-bubble", []uint16{99}, nil, true},
+		{"unknown", []uint16{65535}, nil, true},
+		{"duplicate", []uint16{119, 119}, nil, true},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			got, err := resolveCompetitiveAIBubbleCostumes(entries, test.allowed)
+			if (err != nil) != test.wantError || (!test.wantError && !reflect.DeepEqual(got, test.want)) {
+				t.Fatalf("resolved pool = %v, err=%v", got, err)
+			}
+			if !test.wantError && len(got) == 0 {
+				before, roster := bubbleCosmeticRoster(), bubbleCosmeticRoster()
+				assignCompetitiveAIBubbleCosmetics(roster, got, nil, 25, testBubbleDefaultStyle)
+				if !reflect.DeepEqual(before, roster) {
+					t.Fatal("empty allowlist created a costume, color or effect")
+				}
+			}
+		})
+	}
+}
+
 func TestCompetitiveAIBubbleCostumePoolUsesOnlyCanonicalInventoryIDs(t *testing.T) {
 	entries := []itemcatalog.Entry{
 		{ID: 153, RegistryCategory: "bomb"}, {ID: 119, RegistryCategory: "bomb"},
@@ -52,8 +92,8 @@ func TestCompetitiveAIBubbleCosmeticsKeepDistinctStableRoomEquipment(t *testing.
 		forge.Items[id] = craftcatalog.ForgeItem{ItemID: id, Class: craftcatalog.ForgeBomb}
 	}
 	before, first, second := bubbleCosmeticRoster(), bubbleCosmeticRoster(), bubbleCosmeticRoster()
-	assignCompetitiveAIBubbleCosmetics(first, testBubbleCostumeIDs, forge, 325)
-	assignCompetitiveAIBubbleCosmetics(second, testBubbleCostumeIDs, forge, 325)
+	assignCompetitiveAIBubbleCosmetics(first, testBubbleCostumeIDs, forge, 325, testBubbleDefaultStyle)
+	assignCompetitiveAIBubbleCosmetics(second, testBubbleCostumeIDs, forge, 325, testBubbleDefaultStyle)
 	if !reflect.DeepEqual(first, second) {
 		t.Fatal("same match seed changed room equipment")
 	}
@@ -88,25 +128,87 @@ func TestCompetitiveAIBubbleCosmeticsKeepDistinctStableRoomEquipment(t *testing.
 
 func TestCompetitiveAIBubbleCosmeticsRespectAvailableCatalog(t *testing.T) {
 	roster := bubbleCosmeticRoster()
-	assignCompetitiveAIBubbleCosmetics(roster, testBubbleCostumeIDs, nil, 2)
+	assignCompetitiveAIBubbleCosmetics(roster, testBubbleCostumeIDs, nil, 2, testBubbleDefaultStyle)
 	if roster[0].BubbleCosmetic.ItemID == 0 || roster[0].BubbleCosmetic.ItemEffect != 0 {
 		t.Fatal("missing optional forge catalog prevented basic appearance")
 	}
 	restricted := &craftcatalog.Catalog{Items: map[uint16]craftcatalog.ForgeItem{
 		119: {Class: craftcatalog.ForgeCap}, 153: {Class: craftcatalog.ForgeBomb},
 	}}
-	assignCompetitiveAIBubbleCosmetics(roster, testBubbleCostumeIDs, restricted, 2)
+	assignCompetitiveAIBubbleCosmetics(roster, testBubbleCostumeIDs, restricted, 2, testBubbleDefaultStyle)
 	for _, projection := range roster {
 		if projection.BubbleCosmetic.ItemID != 153 {
 			t.Fatal("selected an unavailable or wrong-category item")
 		}
 	}
 	empty := bubbleCosmeticRoster()
-	assignCompetitiveAIBubbleCosmetics(empty, testBubbleCostumeIDs, &craftcatalog.Catalog{}, 2)
+	assignCompetitiveAIBubbleCosmetics(empty, testBubbleCostumeIDs, &craftcatalog.Catalog{}, 2, testBubbleDefaultStyle)
 	if !reflect.DeepEqual(empty, bubbleCosmeticRoster()) {
 		t.Fatal("empty cosmetic pool changed room state")
 	}
-	assignCompetitiveAIBubbleCosmetics(nil, testBubbleCostumeIDs, restricted, 2)
+	assignCompetitiveAIBubbleCosmetics(nil, testBubbleCostumeIDs, restricted, 2, testBubbleDefaultStyle)
+}
+
+func TestCompetitiveAIBubbleColorAndEffectArrays(t *testing.T) {
+	forge := &craftcatalog.Catalog{
+		Items:   map[uint16]craftcatalog.ForgeItem{119: {Class: craftcatalog.ForgeBomb}},
+		Effects: map[byte]craftcatalog.EffectForm{16: {Class: craftcatalog.ForgeBomb, Level: 1}, 20: {Class: craftcatalog.ForgeBomb, Level: 5}},
+		Colors:  map[craftcatalog.ForgeColor]string{0: "white", 2: "blue"},
+	}
+	for _, test := range []struct {
+		name                  string
+		colors, levels        []uint16
+		wantColor, wantEffect byte
+	}{
+		{"blue level five", []uint16{2}, []uint16{5}, 2, 20},
+		{"omitted styles", nil, nil, 0, 0},
+		{"empty color suppresses effect", []uint16{}, []uint16{5}, 0, 0},
+		{"zero color suppresses effect", []uint16{0}, []uint16{5}, 0, 0},
+		{"empty effect keeps color", []uint16{2}, []uint16{}, 2, 0},
+		{"zero effect keeps color", []uint16{2}, []uint16{0}, 2, 0},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			style := CompetitiveAIConfig{BubbleCostumeColorIDs: test.colors, BubbleCostumeEffectLevels: test.levels}
+			if err := style.validateBubbleCostumeStyleLists(); err != nil {
+				t.Fatal(err)
+			}
+			roster := bubbleCosmeticRoster()
+			assignCompetitiveAIBubbleCosmetics(roster, []uint16{119}, forge, 25, style)
+			for _, projection := range roster {
+				item := projection.BubbleCosmetic
+				if item.ItemID != 119 || item.ItemColor != test.wantColor || item.ItemEffect != test.wantEffect {
+					t.Fatalf("style result = %+v", item)
+				}
+			}
+			plain := bubbleCosmeticRoster()
+			assignCompetitiveAIBubbleCosmetics(plain, []uint16{}, forge, 25, style)
+			if !reflect.DeepEqual(plain, bubbleCosmeticRoster()) {
+				t.Fatal("color/effect arrays styled plain default bubbles")
+			}
+		})
+	}
+	plain := bubbleCosmeticRoster()
+	assignCompetitiveAIBubbleCosmetics(plain, []uint16{0}, forge, 25, testBubbleDefaultStyle)
+	if !reflect.DeepEqual(plain, bubbleCosmeticRoster()) {
+		t.Fatal("item choice zero equipped a costume, color or effect")
+	}
+	colors, effects := map[byte]bool{}, map[byte]bool{}
+	for seed := uint32(1); seed <= 64; seed++ {
+		roster := bubbleCosmeticRoster()
+		assignCompetitiveAIBubbleCosmetics(roster, []uint16{119}, forge, seed, CompetitiveAIConfig{
+			BubbleCostumeColorIDs: []uint16{0, 2}, BubbleCostumeEffectLevels: []uint16{0, 5},
+		})
+		for _, projection := range roster {
+			item := projection.BubbleCosmetic
+			if item.ItemColor == 0 && item.ItemEffect != 0 {
+				t.Fatal("effect exists without color")
+			}
+			colors[item.ItemColor], effects[item.ItemEffect] = true, true
+		}
+	}
+	if !colors[0] || !colors[2] || !effects[0] || !effects[20] {
+		t.Fatal("mixed zero/style choices were not all reachable")
+	}
 }
 
 func TestInstalledAIBubbleCosmeticsAndAllBubbleForgeEntries(t *testing.T) {
@@ -173,7 +275,7 @@ func TestInstalledAIBubbleCosmeticsAndAllBubbleForgeEntries(t *testing.T) {
 	levels, colors, skins := map[byte]bool{}, map[byte]bool{}, map[uint16]bool{}
 	for seed := uint32(1); seed <= 1024; seed++ {
 		roster := bubbleCosmeticRoster()
-		assignCompetitiveAIBubbleCosmetics(roster, costumes, forge, seed)
+		assignCompetitiveAIBubbleCosmetics(roster, costumes, forge, seed, testBubbleDefaultStyle)
 		seen := map[uint16]bool{}
 		for _, projection := range roster {
 			item := projection.BubbleCosmetic

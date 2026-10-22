@@ -68,6 +68,11 @@ type CompetitiveAIConfig struct {
 	InterOpThreads    int    `json:"inter_op_threads,omitempty"`
 	TickMS            uint32 `json:"tick_ms,omitempty"`
 	SearchEnabled     bool   `json:"search_enabled,omitempty"`
+	// Empty or omitted lists disable that part of the AI appearance.
+	// Do not use omitempty: config round trips must preserve the empty array.
+	BubbleCostumeItemIDs      []uint16 `json:"bubble_costume_item_ids"`
+	BubbleCostumeColorIDs     []uint16 `json:"bubble_costume_color_ids"`
+	BubbleCostumeEffectLevels []uint16 `json:"bubble_costume_effect_levels"`
 }
 
 type DirectoryHallConfig struct {
@@ -234,6 +239,9 @@ func LoadConfig(path string) (Config, error) {
 	decoder.DisallowUnknownFields()
 	if err := decoder.Decode(&config); err != nil {
 		return Config{}, fmt.Errorf("decode config: %w", err)
+	}
+	if err := config.CompetitiveAI.validateBubbleCostumeStyleLists(); err != nil {
+		return Config{}, err
 	}
 	if config.CaptureRoot == "" {
 		config.CaptureRoot = "runtime/captures"

@@ -3,7 +3,9 @@ package probe
 import (
 	"encoding/binary"
 	"io"
+	"os"
 	"path/filepath"
+	"slices"
 	"testing"
 
 	"qqtang/internal/game/itemcatalog"
@@ -141,29 +143,47 @@ func TestCompetitiveAIStandardCapacityFillHonorsScatteredClosedSeats(t *testing.
 }
 
 func TestCompetitiveAIStandardStartProjectsTheCapacityRoster(t *testing.T) {
-	catalog, err := mapdata.LoadCatalog(filepath.Join("..", "..", "..", "runtime", "client-patched"))
-	if err != nil {
-		t.Skipf("verified runtime client is unavailable: %v", err)
+	root := os.Getenv("QQT_AI_TEST_CLIENT_ROOT")
+	if root == "" {
+		root = filepath.Join("..", "..", "..", "runtime", "client-patched")
+		if _, err := os.Stat(filepath.Join(root, "map", "mapDesc.py")); os.IsNotExist(err) {
+			t.Skip("client resources not installed; set QQT_AI_TEST_CLIENT_ROOT to run this integration check")
+		}
 	}
-	entries, err := itemcatalog.Load(filepath.Join("..", "..", "..", "runtime", "client-patched"))
+	catalog, err := mapdata.LoadCatalog(root)
 	if err != nil {
 		t.Fatal(err)
 	}
+	entries, err := itemcatalog.Load(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	allCostumes := competitiveAIBubbleCostumeIDs(entries)
 	for _, test := range []struct {
 		name        string
 		selection   roomstate.MapSelection
 		closedSeats []byte
 		wantPlayers int
+		allowed     []uint16
 	}{
-		{"fixed eight seats", roomstate.FixedMapSelection(905), nil, 8},
-		{"fixed six seats", roomstate.FixedMapSelection(905), []byte{2, 6}, 6},
-		{"random eight seats", roomstate.RandomMapSelection(), nil, 8},
-		{"random odd capacity", roomstate.RandomMapSelection(), []byte{8}, 6},
+		{"fixed eight seats", roomstate.FixedMapSelection(905), nil, 8, allCostumes},
+		{"fixed six seats", roomstate.FixedMapSelection(905), []byte{2, 6}, 6, allCostumes},
+		{"random eight seats", roomstate.RandomMapSelection(), nil, 8, allCostumes},
+		{"random odd capacity", roomstate.RandomMapSelection(), []byte{8}, 6, allCostumes},
+		{"omitted costumes use default", roomstate.FixedMapSelection(905), nil, 8, nil},
+		{"empty costumes use default", roomstate.FixedMapSelection(905), nil, 8, []uint16{}},
+		{"zero costume uses default", roomstate.FixedMapSelection(905), nil, 8, []uint16{0}},
+		{"mixed plain and special", roomstate.FixedMapSelection(905), nil, 8, []uint16{0, 119}},
+		{"restricted costumes", roomstate.FixedMapSelection(905), nil, 8, []uint16{119, 256}},
 	} {
 		t.Run(test.name, func(t *testing.T) {
+			costumes, err := resolveCompetitiveAIBubbleCostumes(entries, test.allowed)
+			if err != nil {
+				t.Fatal(err)
+			}
 			server := &Server{
 				mapCatalog: catalog, logWriter: io.Discard,
-				competitiveAIBubbleCostumes: competitiveAIBubbleCostumeIDs(entries),
+				competitiveAIBubbleCostumes: costumes,
 				config:                      Config{CompetitiveAI: CompetitiveAIConfig{Enabled: true}},
 				competitiveAIPolicy:         &competitiveAIActorPolicyFactoryProbe{},
 				battles:                     make(map[uint32]*match.AdventureBattle), competitiveBattles: make(map[uint32]*match.CompetitiveBattle),
@@ -228,8 +248,19 @@ func TestCompetitiveAIStandardStartProjectsTheCapacityRoster(t *testing.T) {
 				if room.Snapshot().LockedSeats[projection.SeatID-1] {
 					t.Fatalf("AI occupied closed seat %d", projection.SeatID)
 				}
-				if projection.BubbleCosmetic.ItemID == 0 || projection.BubbleCosmetic.ItemRoleID != projection.RoleID {
+				if len(costumes) == 0 || projection.BubbleCosmetic.ItemID == 0 {
+					if projection.BubbleCosmetic != (game.ItemInfo{}) {
+						t.Fatalf("empty list still equipped a costume/color/effect: %+v", projection)
+					}
+					notification, err := projection.enterNotification(owner.RoomID)
+					if err != nil || len(notification.Player.Items) != 0 {
+						t.Fatalf("default bubble sent equipped ITEM_INFO: %+v, %v", notification, err)
+					}
+				} else if projection.BubbleCosmetic.ItemID == 0 || projection.BubbleCosmetic.ItemRoleID != projection.RoleID {
 					t.Fatalf("match start lost AI bubble equipment: %+v", projection)
+				}
+				if len(test.allowed) > 0 && !slices.Contains(test.allowed, projection.BubbleCosmetic.ItemID) {
+					t.Fatalf("match start escaped configured costume IDs: %+v", projection)
 				}
 			}
 			if len(owner.Profile.Inventory) != 1 || owner.Profile.Inventory[0].ItemID != game.CompetitiveAICardItemID {

@@ -147,7 +147,10 @@
     "intra_op_threads": 1,
     "inter_op_threads": 1,
     "tick_ms": 100,
-    "search_enabled": false
+    "search_enabled": false,
+    "bubble_costume_item_ids": [0],
+    "bubble_costume_color_ids": [0],
+    "bubble_costume_effect_levels": [0]
   },
   "player_profile": {
     "nickname": "糖一",

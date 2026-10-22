@@ -1,6 +1,7 @@
 package probe
 
 import (
+	"encoding/json"
 	"net"
 	"os"
 	"path/filepath"
@@ -10,6 +11,88 @@ import (
 	"qqtang/internal/protocol/game"
 	gmserver "qqtang/internal/server/gm"
 )
+
+func TestLoadConfigPreservesEmptyAIBubbleCostumeList(t *testing.T) {
+	for _, test := range []struct {
+		name      string
+		aiJSON    string
+		wantNil   bool
+		wantCount int
+	}{
+		{"omitted", `{}`, true, 0},
+		{"empty disables", `{"bubble_costume_item_ids":[]}`, false, 0},
+		{"restricted", `{"bubble_costume_item_ids":[119,256]}`, false, 2},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			path := filepath.Join(t.TempDir(), "server.json")
+			data := []byte(`{"competitive_ai":` + test.aiJSON + `,"listeners":[{"name":"game","network":"tcp","address":"127.0.0.1:18000","response":{}}]}`)
+			if err := os.WriteFile(path, data, 0600); err != nil {
+				t.Fatal(err)
+			}
+			config, err := LoadConfig(path)
+			if err != nil {
+				t.Fatal(err)
+			}
+			ids := config.CompetitiveAI.BubbleCostumeItemIDs
+			if (ids == nil) != test.wantNil || len(ids) != test.wantCount {
+				t.Fatalf("bubble costume IDs = %#v", ids)
+			}
+			encoded, err := json.Marshal(config.CompetitiveAI)
+			if err != nil {
+				t.Fatal(err)
+			}
+			var decoded CompetitiveAIConfig
+			if err := json.Unmarshal(encoded, &decoded); err != nil {
+				t.Fatal(err)
+			}
+			if (decoded.BubbleCostumeItemIDs == nil) != test.wantNil || len(decoded.BubbleCostumeItemIDs) != test.wantCount {
+				t.Fatal("JSON round trip changed empty/omitted costume semantics")
+			}
+		})
+	}
+}
+
+func TestLoadConfigAIBubbleStyleArrays(t *testing.T) {
+	for _, test := range []struct {
+		name, fields string
+		wantError    bool
+	}{
+		{"zero choices", `"bubble_costume_color_ids":[0,2],"bubble_costume_effect_levels":[0,5]`, false},
+		{"empty colors allow nonempty effects", `"bubble_costume_color_ids":[],"bubble_costume_effect_levels":[5]`, false},
+		{"invalid color", `"bubble_costume_color_ids":[6]`, true},
+		{"invalid level", `"bubble_costume_effect_levels":[6]`, true},
+		{"duplicate level", `"bubble_costume_effect_levels":[1,1]`, true},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			path := filepath.Join(t.TempDir(), "server.json")
+			data := []byte(`{"competitive_ai":{` + test.fields + `},"listeners":[{"name":"game","network":"tcp","address":"127.0.0.1:18000","response":{}}]}`)
+			if err := os.WriteFile(path, data, 0600); err != nil {
+				t.Fatal(err)
+			}
+			config, err := LoadConfig(path)
+			if (err != nil) != test.wantError {
+				t.Fatalf("config=%+v err=%v", config.CompetitiveAI, err)
+			}
+			if err == nil && test.name == "empty colors allow nonempty effects" {
+				encoded, err := json.Marshal(config.CompetitiveAI)
+				if err != nil {
+					t.Fatal(err)
+				}
+				if !strings.Contains(string(encoded), `"bubble_costume_color_ids":[]`) ||
+					!strings.Contains(string(encoded), `"bubble_costume_effect_levels":[5]`) {
+					t.Fatalf("style settings did not serialize as JSON arrays: %s", encoded)
+				}
+				var decoded CompetitiveAIConfig
+				if err = json.Unmarshal(encoded, &decoded); err != nil {
+					t.Fatal(err)
+				}
+				if decoded.BubbleCostumeColorIDs == nil || len(decoded.BubbleCostumeColorIDs) != 0 || len(decoded.BubbleCostumeEffectLevels) != 1 {
+					t.Fatal("round trip lost independent empty style arrays")
+				}
+			}
+		})
+	}
+}
 
 func TestLoadConfigRejectsNonLoopback(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "server.json")
